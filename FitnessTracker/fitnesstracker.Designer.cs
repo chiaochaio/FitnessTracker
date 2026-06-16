@@ -62,6 +62,15 @@
             this.label9 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.dgvExercise = new System.Windows.Forms.DataGridView();
+            this.label7 = new System.Windows.Forms.Label();
+            this.txtHeight = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.txtAge = new System.Windows.Forms.TextBox();
+            this.cmbActivity = new System.Windows.Forms.ComboBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.cmbGender = new System.Windows.Forms.ComboBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -130,6 +139,7 @@
             this.dtpDate.Name = "dtpDate";
             this.dtpDate.Size = new System.Drawing.Size(188, 33);
             this.dtpDate.TabIndex = 0;
+            this.dtpDate.ValueChanged += new System.EventHandler(this.dtpDate_ValueChanged);
             // 
             // groupBox1
             // 
@@ -139,7 +149,7 @@
             this.groupBox1.Controls.Add(this.pbCalories);
             this.groupBox1.Location = new System.Drawing.Point(6, 45);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(531, 162);
+            this.groupBox1.Size = new System.Drawing.Size(531, 134);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "今日熱量統計";
@@ -147,13 +157,22 @@
             // groupBox2
             // 
             this.groupBox2.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.groupBox2.Controls.Add(this.cmbGender);
+            this.groupBox2.Controls.Add(this.label14);
+            this.groupBox2.Controls.Add(this.label13);
+            this.groupBox2.Controls.Add(this.cmbActivity);
+            this.groupBox2.Controls.Add(this.txtAge);
+            this.groupBox2.Controls.Add(this.label12);
+            this.groupBox2.Controls.Add(this.label11);
+            this.groupBox2.Controls.Add(this.txtHeight);
+            this.groupBox2.Controls.Add(this.label7);
             this.groupBox2.Controls.Add(this.btnSaveWeight);
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.txtWeight);
             this.groupBox2.Controls.Add(this.label1);
-            this.groupBox2.Location = new System.Drawing.Point(6, 213);
+            this.groupBox2.Location = new System.Drawing.Point(6, 185);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(531, 131);
+            this.groupBox2.Size = new System.Drawing.Size(531, 159);
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "個人狀態";
@@ -161,24 +180,25 @@
             // 
             // pbCalories
             // 
-            this.pbCalories.Location = new System.Drawing.Point(16, 41);
+            this.pbCalories.Location = new System.Drawing.Point(128, 0);
             this.pbCalories.Name = "pbCalories";
-            this.pbCalories.Size = new System.Drawing.Size(291, 28);
+            this.pbCalories.Size = new System.Drawing.Size(397, 27);
             this.pbCalories.TabIndex = 0;
             // 
             // lblCalProgress
             // 
             this.lblCalProgress.AutoSize = true;
-            this.lblCalProgress.Location = new System.Drawing.Point(12, 85);
+            this.lblCalProgress.Location = new System.Drawing.Point(12, 38);
             this.lblCalProgress.Name = "lblCalProgress";
             this.lblCalProgress.Size = new System.Drawing.Size(109, 24);
             this.lblCalProgress.TabIndex = 1;
             this.lblCalProgress.Text = "今日已攝取:";
+            this.lblCalProgress.Click += new System.EventHandler(this.lblCalProgress_Click);
             // 
             // lblCalStatus
             // 
             this.lblCalStatus.AutoSize = true;
-            this.lblCalStatus.Location = new System.Drawing.Point(12, 121);
+            this.lblCalStatus.Location = new System.Drawing.Point(12, 71);
             this.lblCalStatus.Name = "lblCalStatus";
             this.lblCalStatus.Size = new System.Drawing.Size(109, 24);
             this.lblCalStatus.TabIndex = 2;
@@ -187,16 +207,16 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 41);
+            this.label1.Location = new System.Drawing.Point(12, 35);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(105, 24);
+            this.label1.Size = new System.Drawing.Size(67, 24);
             this.label1.TabIndex = 0;
-            this.label1.Text = "今日體重：";
+            this.label1.Text = "體重：";
             // 
             // txtWeight
             // 
             this.txtWeight.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.txtWeight.Location = new System.Drawing.Point(110, 38);
+            this.txtWeight.Location = new System.Drawing.Point(78, 32);
             this.txtWeight.Name = "txtWeight";
             this.txtWeight.Size = new System.Drawing.Size(110, 33);
             this.txtWeight.TabIndex = 1;
@@ -204,20 +224,22 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(226, 44);
+            this.label2.Location = new System.Drawing.Point(199, 41);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(32, 24);
             this.label2.TabIndex = 2;
             this.label2.Text = "kg";
+            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // btnSaveWeight
             // 
-            this.btnSaveWeight.Location = new System.Drawing.Point(110, 77);
+            this.btnSaveWeight.Location = new System.Drawing.Point(358, 112);
             this.btnSaveWeight.Name = "btnSaveWeight";
-            this.btnSaveWeight.Size = new System.Drawing.Size(97, 36);
+            this.btnSaveWeight.Size = new System.Drawing.Size(144, 36);
             this.btnSaveWeight.TabIndex = 3;
-            this.btnSaveWeight.Text = "更新體重";
+            this.btnSaveWeight.Text = "更新個人狀態";
             this.btnSaveWeight.UseVisualStyleBackColor = true;
+            this.btnSaveWeight.Click += new System.EventHandler(this.btnSaveWeight_Click);
             // 
             // groupBox3
             // 
@@ -317,6 +339,7 @@
             this.btnAddDiet.TabIndex = 8;
             this.btnAddDiet.Text = "新增這餐";
             this.btnAddDiet.UseVisualStyleBackColor = false;
+            this.btnAddDiet.Click += new System.EventHandler(this.btnAddDiet_Click);
             // 
             // dgvDiet
             // 
@@ -354,6 +377,7 @@
             this.btnAddExercise.TabIndex = 8;
             this.btnAddExercise.Text = "新增運動";
             this.btnAddExercise.UseVisualStyleBackColor = false;
+            this.btnAddExercise.Click += new System.EventHandler(this.btnAddExercise_Click);
             // 
             // txtExerciseBurn
             // 
@@ -412,6 +436,94 @@
             this.dgvExercise.RowTemplate.Height = 27;
             this.dgvExercise.Size = new System.Drawing.Size(513, 150);
             this.dgvExercise.TabIndex = 2;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(12, 74);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(67, 24);
+            this.label7.TabIndex = 4;
+            this.label7.Text = "身高：";
+            // 
+            // txtHeight
+            // 
+            this.txtHeight.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.txtHeight.Location = new System.Drawing.Point(78, 71);
+            this.txtHeight.Name = "txtHeight";
+            this.txtHeight.Size = new System.Drawing.Size(110, 33);
+            this.txtHeight.TabIndex = 5;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(194, 80);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(37, 24);
+            this.label11.TabIndex = 6;
+            this.label11.Text = "cm";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(12, 112);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(67, 24);
+            this.label12.TabIndex = 7;
+            this.label12.Text = "年齡：";
+            // 
+            // txtAge
+            // 
+            this.txtAge.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.txtAge.Location = new System.Drawing.Point(78, 109);
+            this.txtAge.Name = "txtAge";
+            this.txtAge.Size = new System.Drawing.Size(110, 33);
+            this.txtAge.TabIndex = 8;
+            // 
+            // cmbActivity
+            // 
+            this.cmbActivity.FormattingEnabled = true;
+            this.cmbActivity.Items.AddRange(new object[] {
+            "靜態生活 (幾乎不運動)",
+            "輕度活動 (每週運動1-3次)",
+            "中度活動 (每週運動3-5次)",
+            "高度活動 (每週運動6-7次)",
+            "非常活躍 (激烈運動/勞動工作)"});
+            this.cmbActivity.Location = new System.Drawing.Point(348, 74);
+            this.cmbActivity.Name = "cmbActivity";
+            this.cmbActivity.Size = new System.Drawing.Size(154, 32);
+            this.cmbActivity.TabIndex = 9;
+            this.cmbActivity.SelectedIndexChanged += new System.EventHandler(this.cmbActivity_SelectedIndexChanged);
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(256, 74);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(86, 24);
+            this.label13.TabIndex = 10;
+            this.label13.Text = "活動量：";
+            this.label13.Click += new System.EventHandler(this.label13_Click);
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(275, 35);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(67, 24);
+            this.label14.TabIndex = 11;
+            this.label14.Text = "性別：";
+            // 
+            // cmbGender
+            // 
+            this.cmbGender.FormattingEnabled = true;
+            this.cmbGender.Items.AddRange(new object[] {
+            "男",
+            "女"});
+            this.cmbGender.Location = new System.Drawing.Point(348, 32);
+            this.cmbGender.Name = "cmbGender";
+            this.cmbGender.Size = new System.Drawing.Size(51, 32);
+            this.cmbGender.TabIndex = 12;
             // 
             // fitnesstracker
             // 
@@ -480,6 +592,15 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.DataGridView dgvExercise;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.TextBox txtHeight;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox txtAge;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.ComboBox cmbActivity;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.ComboBox cmbGender;
     }
 }
 
