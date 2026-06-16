@@ -17,11 +17,18 @@ namespace FitnessTracker
         private string currentUser;
         private DailyLog currentDailyLog; // 記錄當天所有的飲食與運動資料物件
         private UserProfile currentUserProfile; // 存放最新個人基本資料
+        private bool isLoadingData = false;
+
+        private string userGender = "男";
+        private double userHeight = 170;
+        private int userAge = 20;
+        private int userActivityIndex = 0;
         public fitnesstracker(string account)
         {
             InitializeComponent();
             currentUser = account;
             this.Text = $"運動飲食小助手 - 目前使用者: {currentUser}";
+            LoadDataByDate();
         }
 
         public class DietItem
@@ -42,6 +49,10 @@ namespace FitnessTracker
         {
             public string DateString { get; set; }
             public double CurrentWeight { get; set; }
+            public string Gender { get; set; } = "男";
+            public double Height { get; set; } = 170;
+            public int Age { get; set; } = 20;
+            public int ActivityIndex { get; set; } = 0;
             public List<DietItem> Diets { get; set; } = new List<DietItem>();
             public List<ExerciseItem> Exercises { get; set; } = new List<ExerciseItem>();
         }
@@ -59,66 +70,82 @@ namespace FitnessTracker
             // 1. 初始化 DataGridView 的外觀（讓牠自動伸縮填滿）
             dgvDiet.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvExercise.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-
-            // 2. 預設載入「今天」的資料
-            LoadDataByDate();
         }
 
         // 核心讀檔功能：依據 dtpDate 選擇的日期讀取 JSON
         private void LoadDataByDate()
         {
+            isLoadingData = true;
+
             string dateStr = dtpDate.Value.ToString("yyyy-MM-dd");
+
+            // 1. 先確認這一天以前有沒有存過 JSON 檔案
             string userFolder = Path.Combine(Application.StartupPath, "Data", currentUser);
-            if (!Directory.Exists(userFolder)) Directory.CreateDirectory(userFolder);
-
-            // 【1. 讀取個人基本設定檔（延續最新數據，不用天天輸入）】
-            string profilePath = Path.Combine(userFolder, "user_profile.json");
-            if (File.Exists(profilePath))
-            {
-                string profileJson = File.ReadAllText(profilePath);
-                currentUserProfile = JsonSerializer.Deserialize<UserProfile>(profileJson);
-            }
-            else
-            {
-                currentUserProfile = new UserProfile(); // 第一次登入給空白預設
-            }
-
-            // 將基本資料填入 UI 畫面
-            cmbGender.SelectedItem = currentUserProfile.Gender ?? "男";
-            txtHeight.Text = currentUserProfile.Height.ToString();
-            txtAge.Text = currentUserProfile.Age.ToString();
-            cmbActivity.SelectedIndex = currentUserProfile.ActivityIndex;
-
-            // 【2. 讀取當天飲食運動紀錄】
             string filePath = Path.Combine(userFolder, $"{dateStr}.json");
+
             if (File.Exists(filePath))
             {
+                // 💾【歷史情境】：這一天以前存過資料！
                 string jsonString = File.ReadAllText(filePath);
                 currentDailyLog = JsonSerializer.Deserialize<DailyLog>(jsonString);
+
+                // 💡 歷史資料最高優先！直接從這天的檔案裡把當時的數據抓出來填畫面，絕對不被最新資料庫干擾！
+                userGender = currentDailyLog.Gender ?? "男";
+                userHeight = currentDailyLog.Height > 0 ? currentDailyLog.Height : 170;
+                userAge = currentDailyLog.Age > 0 ? currentDailyLog.Age : 20;
+                userActivityIndex = currentDailyLog.ActivityIndex;
+                txtWeight.Text = currentDailyLog.CurrentWeight.ToString();
             }
             else
             {
-                // 如果這天還沒有紀錄，體重自動延續昨天的，或者顯示 0 讓使用者填
+                // 🌟【全新一天情境】：這一天完全沒點過、沒資料！
+                // 💡 這時候才去資料庫拿最新的一般數據來給新的一天「繼承」！
+                userGender = "男";
+                userHeight = 170;
+                userAge = 20;
+                userActivityIndex = 0;
+                double lastWeight = 50;
+
+                // 從 LocalDB 撈出最新的那筆大師級檔案
+                DatabaseHelper.LoadUserProfile(currentUser, ref userGender, ref userHeight, ref userAge, ref userActivityIndex, ref lastWeight);
+
+                // 建立新一天的空白紀錄物件，並把繼承過來的精華數據灌進去
                 currentDailyLog = new DailyLog
                 {
                     DateString = dateStr,
-                    CurrentWeight = currentUserProfile.LastWeight // 讓新的一天自動繼承舊體重
+                    CurrentWeight = lastWeight,
+                    Gender = userGender,
+                    Height = userHeight,
+                    Age = userAge,
+                    ActivityIndex = userActivityIndex
                 };
+
+                txtWeight.Text = lastWeight.ToString();
             }
 
-            // 將當天體重填入輸入框
-            txtWeight.Text = currentDailyLog.CurrentWeight.ToString();
+            // 2. 統一將撈出來的變數（不論是歷史還是資料庫繼承來的）倒回畫面上顯示
+            txtHeight.Text = userHeight.ToString();
+            txtAge.Text = userAge.ToString();
 
+            userGender = userGender.Trim();
+            if (userGender == "女") cmbGender.SelectedIndex = 1;
+            else cmbGender.SelectedIndex = 0;
+
+            if (userActivityIndex >= 0 && userActivityIndex < 5) cmbActivity.SelectedIndex = userActivityIndex;
+            else cmbActivity.SelectedIndex = 0;
+
+            isLoadingData = false;
+
+            // 3. 重新計算今日進度條與熱量
             RefreshGrids();
         }
 
-        // 核心存檔功能：將目前的 currentDailyLog 寫入該帳號資料夾
         private void SaveDataToFile()
         {
             string userFolder = Path.Combine(Application.StartupPath, "Data", currentUser);
             string filePath = Path.Combine(userFolder, $"{currentDailyLog.DateString}.json");
 
-            // 【存檔】轉成漂亮的 JSON 格式寫入
+            // 轉成漂亮的 JSON 格式寫入
             string jsonString = JsonSerializer.Serialize(currentDailyLog, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(filePath, jsonString);
         }
@@ -138,12 +165,10 @@ namespace FitnessTracker
             int totalBurn = 0;
             foreach (var item in currentDailyLog.Exercises) totalBurn += item.BurnedCalories;
 
-            // 2. 依據公式計算 BMR (以男生公式為範例， s1131418 )
-            // 公式：66 + (13.7 x 體重) + (5 x 身高) - (6.8 x 年齡)
-            double weight = currentDailyLog.CurrentWeight;
-            double height = currentUserProfile.Height;
-            int age = currentUserProfile.Age;
-            string gender = cmbGender.SelectedItem?.ToString() ?? "男";
+            double.TryParse(txtWeight.Text, out double weight);
+            double height = userHeight; // 永遠使用資料庫吐出來的真實身高！
+            int age = userAge;         // 永遠使用資料庫吐出來的真實年齡！
+            string gender = userGender;// 永遠使用資料庫吐出來的真實性別！
 
             double bmr = 0;
             double tdee = 0;
@@ -290,7 +315,7 @@ namespace FitnessTracker
 
         private void btnSaveWeight_Click(object sender, EventArgs e)
         {
-            // 驗證並撈取輸入
+            // 1. 驗證並撈取輸入
             if (!double.TryParse(txtWeight.Text, out double w) ||
                 !double.TryParse(txtHeight.Text, out double h) ||
                 !int.TryParse(txtAge.Text, out int age))
@@ -299,25 +324,32 @@ namespace FitnessTracker
                 return;
             }
 
-            // 1. 更新並儲存當天的體重
+            string gender = cmbGender.SelectedItem?.ToString() ?? "男";
+            int activityIndex = cmbActivity.SelectedIndex >= 0 ? cmbActivity.SelectedIndex : 0;
+
+            // 2. 🔒【鎖定當天歷史】：把這筆設定寫入當天的物件中
             currentDailyLog.CurrentWeight = w;
-            SaveDataToFile(); // 儲存 yyyy-MM-dd.json
+            currentDailyLog.Gender = gender;
+            currentDailyLog.Height = h;
+            currentDailyLog.Age = age;
+            currentDailyLog.ActivityIndex = activityIndex;
 
-            // 2. 更新並儲存長期的個人基本資料（身高、年齡、活動量）
-            currentUserProfile.Gender = cmbGender.SelectedItem?.ToString() ?? "男";
-            currentUserProfile.Height = h;
-            currentUserProfile.Age = age;
-            currentUserProfile.ActivityIndex = cmbActivity.SelectedIndex;
-            currentUserProfile.LastWeight = w;
+            // 儲存到當天的 JSON 歷史檔案中，以後點回這天，它就永遠長這樣！
+            SaveDataToFile();
 
-            string userFolder = Path.Combine(Application.StartupPath, "Data", currentUser);
-            string profilePath = Path.Combine(userFolder, "user_profile.json");
-            string profileJson = JsonSerializer.Serialize(currentUserProfile, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(profilePath, profileJson);
+            // 3. 🚀【更新未來繼承】：同時把最新狀況寫入 LocalDB，給未來的全新日子使用
+            DatabaseHelper.UpdateUserProfile(currentUser, gender, h, age, activityIndex, w);
 
-            // 3. 重新計算並刷畫面
+            // 4. 同步更新目前主畫面的全域計算變數
+            userGender = gender;
+            userHeight = h;
+            userAge = age;
+            userActivityIndex = activityIndex;
+
+            // 5. 刷畫面計算
             RefreshGrids();
-            MessageBox.Show("個人狀態與今日熱量目標已更新！", "成功");
+
+            MessageBox.Show("個人狀態與今日資料庫熱量目標已更新！", "成功");
         }
 
         private void lblCalProgress_Click(object sender, EventArgs e)
