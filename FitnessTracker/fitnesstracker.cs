@@ -334,5 +334,77 @@ namespace FitnessTracker
         {
 
         }
+
+        private void txtFoodCal_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnDeleteDiet_Click(object sender, EventArgs e)
+        {
+            // 檢查使用者是否有選中 DataGridView 的任何一列
+            if (dgvDiet.CurrentRow != null && dgvDiet.CurrentRow.Index >= 0)
+            {
+                // 取得目前選中那一列的索引值
+                int selectedIndex = dgvDiet.CurrentRow.Index;
+
+                // 防呆：確保索引值在 List 的合理範圍內
+                if (selectedIndex < currentDailyLog.Diets.Count)
+                {
+                    // 彈出確認視窗，避免使用者不小心手殘點錯
+                    DialogResult result = MessageBox.Show("確定要刪除這筆飲食紀錄嗎？", "確認刪除", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        // 1. 從核心資料清單中移除該筆項目
+                        currentDailyLog.Diets.RemoveAt(selectedIndex);
+
+                        // 2. 重新儲存到 JSON 檔案
+                        SaveDataToFile();
+
+                        // 3. 重新整理畫面表格與熱量進度條
+                        RefreshGrids();
+
+                        MessageBox.Show("飲食紀錄已刪除！", "成功");
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("請先在表格中點選一筆想要刪除的飲食紀錄！", "提示");
+            }
+        }
+
+        private void btnDeleteExercise_Click(object sender, EventArgs e)
+        {
+            // 檢查使用者是否有選中 DataGridView 的任何一列
+            if (dgvExercise.CurrentRow != null && dgvExercise.CurrentRow.Index >= 0)
+            {
+                int selectedIndex = dgvExercise.CurrentRow.Index;
+
+                if (selectedIndex < currentDailyLog.Exercises.Count)
+                {
+                    DialogResult result = MessageBox.Show("確定要刪除這筆運動紀錄嗎？", "確認刪除", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        // 1. 從運動清單中移除
+                        currentDailyLog.Exercises.RemoveAt(selectedIndex);
+
+                        // 2. 存檔
+                        SaveDataToFile();
+
+                        // 3. 刷畫面
+                        RefreshGrids();
+
+                        MessageBox.Show("運動紀錄已刪除！", "成功");
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("請先在表格中點選一筆想要刪除的運動紀錄！", "提示");
+            }
+        }
     }
 }
