@@ -16,7 +16,13 @@ namespace FitnessTracker
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new fitnesstracker());
+            FormLogin login = new FormLogin();
+            Application.Run(login);
+            if (login.IsLoginSuccess)
+            {
+                // 4. 成功才真正啟動主畫面生命週期
+                Application.Run(new fitnesstracker(login.LoggedInAccount));
+            }
         }
     }
 }

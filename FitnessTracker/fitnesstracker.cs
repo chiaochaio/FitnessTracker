@@ -12,9 +12,27 @@ namespace FitnessTracker
 {
     public partial class fitnesstracker : Form
     {
-        public fitnesstracker()
+        private string currentUser;
+        public fitnesstracker(string account)
         {
             InitializeComponent();
+            currentUser = account;
+            this.Text = $"運動飲食小助手 - 目前使用者: {currentUser}";
+        }
+
+        private void fitnesstracker_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBox2_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
