@@ -16,6 +16,7 @@ namespace FitnessTracker
     {
         private ComboBox cmbTimeRange;
         private OxyPlot.WindowsForms.PlotView chartTrends;
+        private OxyPlot.WindowsForms.PlotView chartCalories;
         private string currentUser;
         private DailyLog currentDailyLog; // 記錄當天所有的飲食與運動資料物件
         private UserProfile currentUserProfile; // 存放最新個人基本資料
@@ -28,6 +29,7 @@ namespace FitnessTracker
         public fitnesstracker(string account)
         {
             InitializeComponent();
+            this.KeyPreview = true;
             currentUser = account;
             this.Text = $"運動飲食小助手 - 目前使用者: {currentUser}";
             cmbQuickFood.Items.Clear();
@@ -42,6 +44,12 @@ namespace FitnessTracker
             chartTrends.Size = new Size(panelChartContainer.Width - 20, panelChartContainer.Height - 60);
             chartTrends.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right; // 自動伸縮
             panelChartContainer.Controls.Add(chartTrends); // 把圖表塞進箱子
+
+            chartCalories = new OxyPlot.WindowsForms.PlotView();
+            chartCalories.Location = new Point(10, 45); // 位置跟第一個對齊
+            chartCalories.Size = new Size(panelChartContainer2.Width - 20, panelChartContainer2.Height - 60);
+            chartCalories.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            panelChartContainer2.Controls.Add(chartCalories); // 🚀 塞進第二個新箱子！
 
             cmbTimeRange.Items.Clear();
             cmbTimeRange.Items.AddRange(new string[] { "最近一週 (7天趨勢)", "最近一個月 (30天趨勢)", "最近一年 (按月平均)" });
@@ -232,6 +240,17 @@ namespace FitnessTracker
             }
         }
 
+        private void LoadExerciseLogs()
+        {
+            string dateStr = dtpDate.Value.ToString("yyyy-MM-dd");
+            // 重新去資料庫撈當天最新的運動清單
+            currentDailyLog.Exercises = DatabaseHelper.GetExerciseLogs(currentUser, dateStr);
+
+            // 重新綁定 DataSource
+            dgvExercise.DataSource = null;
+            dgvExercise.DataSource = currentDailyLog.Exercises;
+        }
+
         private void groupBox2_Enter(object sender, EventArgs e)
         {
 
@@ -302,27 +321,44 @@ namespace FitnessTracker
 
         private void btnAddExercise_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(txtFoodName.Text) || !int.TryParse(txtFoodCal.Text, out int cal))
+            // 💡 1. 檢查運動名稱（請對齊你畫面上的 TextBox 名稱，假設是 txtSportName）
+            if (string.IsNullOrEmpty(txtExerciseName.Text.Trim()))
             {
-                MessageBox.Show("請輸入正確的食物名稱與熱量！", "提示");
+                MessageBox.Show("請輸入運動項目名稱！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            double.TryParse(txtFoodProtein.Text, out double protein);
+
+            // 💡 2. 檢查運動時間與消耗卡路里（請對齊你的 TextBox 名稱，例如 txtSportTime, txtSportCalories）
+            // 💥 關鍵錯誤：檢查時，不要用到 txtFoodCalories 或是飲食的錯誤提示！
+            if (!int.TryParse(txtExerciseDuration.Text, out int minutes) || minutes <= 0)
+            {
+                MessageBox.Show("請輸入正確的運動時間（分鐘）！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!int.TryParse(txtExerciseBurn.Text, out int calories) || calories <= 0)
+            {
+                // 🚀 【就是這裡錯了！】請確保你的提示訊息是寫「消耗卡路里」，而不是「食物熱量」
+                MessageBox.Show("請輸入正確的運動消耗卡路里！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // 💡 3. 呼叫資料庫新增運動紀錄（TableName 記得要傳對）
             string dateStr = dtpDate.Value.ToString("yyyy-MM-dd");
 
-            // 💡 1. 寫入 DietLogs 資料表 (講義第34頁)
-            DatabaseHelper.AddLogItem("DietLogs", currentUser, dateStr, "FoodName", txtFoodName.Text.Trim(), cal, protein);
+            // 呼叫你的 AddLogItem 方法，寫入 ExerciseLogs 表
+            DatabaseHelper.AddLogItem("ExerciseLogs", currentUser, dateStr, "ActivityName", txtExerciseName.Text.Trim(), minutes, calories);
 
-            // 2. 重新加載並刷畫面
-            LoadDataByDate();
+            MessageBox.Show("運動紀錄新增成功！", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-            txtFoodName.Clear();
-            txtFoodCal.Clear();
-            txtFoodProtein.Clear();
-            cmbQuickFood.SelectedIndex = 0;
+            // 💡 4. 清空輸入框並重新整理運動清單
+            txtExerciseName.Clear();
+            txtExerciseDuration.Clear();
+            txtExerciseBurn.Clear();
 
-            // 💡【即時同步】：一新增熱量，圖表立刻同步重畫！
-            UpdateChartVisuals();
+            LoadExerciseLogs();     // 重新整理 dgvExercise 表格
+            RefreshGrids();        // 重新整理今日總卡路里跟進度條
+            UpdateChartVisuals();  // 同步更新統計圖表
         }
 
         private void label2_Click(object sender, EventArgs e)
@@ -444,62 +480,129 @@ namespace FitnessTracker
 
         private void UpdateChartVisuals()
         {
-            if (chartTrends == null || cmbTimeRange == null) return;
+            if (chartTrends == null || chartCalories == null || cmbTimeRange == null) return;
 
             string rangeType = "week";
             if (cmbTimeRange.SelectedIndex == 1) rangeType = "month";
             else if (cmbTimeRange.SelectedIndex == 2) rangeType = "year";
 
-            // 1. 從資料庫撈取大數據
+            // 1. 從資料庫撈取聯查數據
             List<DatabaseHelper.ChartDataPoint> dataPoints = DatabaseHelper.GetChartData(currentUser, rangeType);
 
-            // 2. 建立一個全新的畫布
-            var plotModel = new OxyPlot.PlotModel { Title = "每日攝取熱量趨勢圖" };
+            // ----------------------------------------------------
+            // 📊 【圖表一：消耗卡路里趨勢圖】 (原本的 chartTrends 箱子)
+            // ----------------------------------------------------
+            var modelBurn = new OxyPlot.PlotModel { Title = "每日運動消耗卡路里 (kcal)" };
 
-            // 3. 💡 【核心重組】：我們只建立一條折線：熱量 (kcal)
-            var seriesCal = new OxyPlot.Series.LineSeries
+            var seriesBurn = new OxyPlot.Series.LineSeries
             {
-                Title = "熱量 (kcal)",
-                Color = OxyPlot.OxyColors.Red, // 使用醒目的橘紅色
-                StrokeThickness = 3,                 // 線條粗細
-                MarkerType = OxyPlot.MarkerType.Circle, // 轉折點改用圓形點
+                Title = "消耗熱量 (kcal)",
+                Color = OxyPlot.OxyColors.DodgerBlue, // 用藍色/青色線條代表運動流汗消耗
+                StrokeThickness = 3,
+                MarkerType = OxyPlot.MarkerType.Circle,
                 MarkerSize = 5,
                 MarkerFill = OxyPlot.OxyColors.White
             };
 
-            // 4. 💡 乾淨的單一 Y 軸設定（直接放在左邊，用來對齊熱量 0 ~ 2000+）
-            var yAxis = new OxyPlot.Axes.LinearAxis
-            {
-                Position = OxyPlot.Axes.AxisPosition.Left,
-                Title = "熱量 (kcal)",
-                Minimum = 0 // 讓熱量刻度從 0 開始看，比較直覺
-            };
-            plotModel.Axes.Add(yAxis);
+            var yAxisBurn = new OxyPlot.Axes.LinearAxis { Position = OxyPlot.Axes.AxisPosition.Left, Title = "消耗熱量 (kcal)", Minimum = 0 };
+            var xAxisBurn = new OxyPlot.Axes.CategoryAxis { Position = OxyPlot.Axes.AxisPosition.Bottom, Title = "日期" };
+            modelBurn.Axes.Add(yAxisBurn);
+            modelBurn.Axes.Add(xAxisBurn);
 
-            // 5. 設定 X 軸 (時間軸)
-            var categoryAxis = new OxyPlot.Axes.CategoryAxis
-            {
-                Position = OxyPlot.Axes.AxisPosition.Bottom,
-                Title = "日期"
-            };
-            plotModel.Axes.Add(categoryAxis);
+            // ----------------------------------------------------
+            // 📊 【圖表二：攝取熱量趨勢圖】 (新 panelChartContainer2 箱子)
+            // ----------------------------------------------------
+            var modelCalories = new OxyPlot.PlotModel { Title = "每日飲食攝取熱量 (kcal)" };
 
-            // 6. 依序把數據庫捞出來的點，只塞入「熱量」數值
+            var seriesCal = new OxyPlot.Series.LineSeries
+            {
+                Title = "攝取熱量 (kcal)",
+                Color = OxyPlot.OxyColors.Red, // 用紅色線條代表飲食熱量進帳
+                StrokeThickness = 3,
+                MarkerType = OxyPlot.MarkerType.Circle,
+                MarkerSize = 5,
+                MarkerFill = OxyPlot.OxyColors.White
+            };
+
+            var yAxisCal = new OxyPlot.Axes.LinearAxis { Position = OxyPlot.Axes.AxisPosition.Left, Title = "攝取熱量 (kcal)", Minimum = 0 };
+            var xAxisCal = new OxyPlot.Axes.CategoryAxis { Position = OxyPlot.Axes.AxisPosition.Bottom, Title = "日期" };
+            modelCalories.Axes.Add(yAxisCal);
+            modelCalories.Axes.Add(xAxisCal);
+
+            // ----------------------------------------------------
+            // 🚀 3. 將數據分別灌入兩條卡路里折線中
+            // ----------------------------------------------------
             for (int i = 0; i < dataPoints.Count; i++)
             {
-                categoryAxis.Labels.Add(dataPoints[i].Label); // 塞入日期字串 (例如 2026-06-17)
-                seriesCal.Points.Add(new OxyPlot.DataPoint(i, dataPoints[i].TotalCalories)); // 塞入該日總熱量
+                string dateLabel = dataPoints[i].Label;
+
+                // 灌入圖表一：運動消耗
+                xAxisBurn.Labels.Add(dateLabel);
+                seriesBurn.Points.Add(new OxyPlot.DataPoint(i, dataPoints[i].TotalBurnCalories));
+
+                // 灌入圖表二：飲食攝取
+                xAxisCal.Labels.Add(dateLabel);
+                seriesCal.Points.Add(new OxyPlot.DataPoint(i, dataPoints[i].TotalCalories));
             }
 
-            // 7. 把這條熱量線裝上畫布，並交付給控制項渲染
-            plotModel.Series.Add(seriesCal);
+            // 4. 把折線裝上各自的畫布
+            modelBurn.Series.Add(seriesBurn);
+            modelCalories.Series.Add(seriesCal);
 
-            chartTrends.Model = plotModel; // 注入更新！
+            // 5. 交付給兩個 Panel 控制項渲染
+            chartTrends.Model = modelBurn;      // 藍色：運動消耗
+            chartCalories.Model = modelCalories; // 紅色：飲食攝取
         }
 
         private void comboBox1_SelectedIndexChanged_1(object sender, EventArgs e)
         {
             UpdateChartVisuals();
+        }
+        private void fitnesstracker_KeyDown(object sender, KeyEventArgs e)
+        {
+            // 💡 防呆機制：如果使用者正在文字框裡「輸入食物名稱」或「打字」，就不要觸發快捷鍵切換分頁
+            if (txtFoodName.Focused || txtFoodCal.Focused || txtFoodProtein.Focused ||
+                txtWeight.Focused || txtHeight.Focused || txtAge.Focused)
+            {
+                return;
+            }
+
+            // 🚀 當使用者按下 Alt + 指定英文字母時，切換對應的分頁索引 (SelectedIndex)
+            if (e.Alt)
+            {
+                switch (e.KeyCode)
+                {
+                    case Keys.H: // Alt + H -> 今日狀態 (第 0 頁)
+                        tabControl1.SelectedIndex = 0;
+                        e.Handled = true; // 告訴系統這個按鍵我們處理完了，不用再往外傳
+                        break;
+
+                    case Keys.E: // Alt + E -> 飲食紀錄 (第 1 頁)
+                        tabControl1.SelectedIndex = 1;
+                        e.Handled = true;
+                        break;
+
+                    case Keys.S: // Alt + S -> 運動紀錄 (第 2 頁)
+                        tabControl1.SelectedIndex = 2;
+                        e.Handled = true;
+                        break;
+
+                    case Keys.C: // Alt + C -> 統計圖表 (第 3 頁)
+                        tabControl1.SelectedIndex = 3;
+                        e.Handled = true;
+                        break;
+                }
+            }
+        }
+
+        private void pbCalories_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label8_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

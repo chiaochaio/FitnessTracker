@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data.SqlClient; //  換成微軟正統 SQL 工具箱 (講講義第43頁)
 using System.IO;
+using System.Runtime.InteropServices.ComTypes;
+using System.Security.Principal;
 using System.Windows.Forms;
 
 namespace FitnessTracker
@@ -346,7 +348,7 @@ namespace FitnessTracker
             public string Label { get; set; }        // X 軸標籤 (日期或月份)
             public double AvgWeight { get; set; }    // 體重
             public double TotalCalories { get; set; } // 總熱量
-            public double TotalProtein { get; set; }  // 總蛋白質
+            public double TotalBurnCalories { get; set; }
         }
 
         // 💡 2. 實作圖表數據的 INNER/LEFT JOIN 撈取方法（消滅 CS0117 錯誤）
@@ -367,35 +369,51 @@ namespace FitnessTracker
 
                 if (rangeType == "year")
                 {
-                    // 年變化的部分維持原樣
                     sql = @"
-                SELECT 
-                    SUBSTRING(LogDate, 1, 7) AS GroupLabel,
-                    0 AS AvgW,
-                    SUM(Calories) / COUNT(DISTINCT LogDate) AS AvgCal,
-                    SUM(Protein) / COUNT(DISTINCT LogDate) AS AvgPro
-                FROM DietLogs
-                WHERE TRIM(Account) = @Account AND LogDate >= @StartDate
-                GROUP BY SUBSTRING(LogDate, 1, 7)
-                ORDER BY GroupLabel";
+                        SELECT 
+                            DietYear.GroupLabel AS GroupLabel,
+                            0 AS AvgW,
+                            DietYear.AvgCal AS AvgCal,
+                            ISNULL(SportYear.AvgBurn, 0) AS TotalBurnCal
+                        FROM (
+                            SELECT 
+                                SUBSTRING(LogDate, 1, 7) AS GroupLabel,
+                                SUM(Calories) / COUNT(DISTINCT LogDate) AS AvgCal
+                            FROM DietLogs
+                            WHERE TRIM(Account) = @Account AND LogDate >= @StartDate
+                            GROUP BY SUBSTRING(LogDate, 1, 7)
+                        ) DietYear
+                        LEFT JOIN (
+                            SELECT 
+                                SUBSTRING(LogDate, 1, 7) AS GroupLabel,
+                                SUM(BurnedCalories) / COUNT(DISTINCT LogDate) AS AvgBurn -- 💡 修正 1：改為 BurnedCalories
+                            FROM ExerciseLogs
+                            WHERE TRIM(Account) = @Account AND LogDate >= @StartDate
+                            GROUP BY SUBSTRING(LogDate, 1, 7)
+                        ) SportYear ON DietYear.GroupLabel = SportYear.GroupLabel
+                        ORDER BY GroupLabel";
                 }
                 else
                 {
                     sql = @"
-                    SELECT 
-                        Diet.LogDate AS GroupLabel,
-                        MAX(ISNULL(Daily.W, 0)) AS AvgW, 
-                        SUM(Diet.Calories) AS AvgCal,
-                        SUM(Diet.Protein) AS AvgPro
-                        FROM DietLogs Diet
+                        SELECT 
+                            DietGroup.LogDate AS GroupLabel,
+                            0 AS AvgW,
+                            DietGroup.TotalCal AS AvgCal,
+                            ISNULL(SportGroup.TotalBurn, 0) AS TotalBurnCal
+                        FROM (
+                            SELECT LogDate, SUM(Calories) AS TotalCal
+                            FROM DietLogs
+                            WHERE TRIM(Account) = @Account AND LogDate >= @StartDate
+                            GROUP BY LogDate
+                        ) DietGroup   
                         LEFT JOIN (
-                        SELECT LogDate, Weight AS W 
-                        FROM DailyLogs 
-                        WHERE TRIM(Account) = @Account
-                        ) Daily ON Diet.LogDate = Daily.LogDate
-                         WHERE TRIM(Diet.Account) = @Account AND Diet.LogDate >= @StartDate
-                        GROUP BY Diet.LogDate
-                        ORDER BY Diet.LogDate";
+                            SELECT LogDate, SUM(BurnedCalories) AS TotalBurn -- 💡 修正 2：改為 BurnedCalories
+                            FROM ExerciseLogs
+                            WHERE TRIM(Account) = @Account AND LogDate >= @StartDate
+                            GROUP BY LogDate
+                        ) SportGroup ON DietGroup.LogDate = SportGroup.LogDate
+                        ORDER BY GroupLabel";
                 }
 
                 using (SqlCommand cmd = new SqlCommand(sql, conn))
@@ -412,7 +430,7 @@ namespace FitnessTracker
                                 Label = rd["GroupLabel"].ToString(),
                                 AvgWeight = rd["AvgW"] != DBNull.Value ? Convert.ToDouble(rd["AvgW"]) : 0,
                                 TotalCalories = rd["AvgCal"] != DBNull.Value ? Convert.ToDouble(rd["AvgCal"]) : 0,
-                                TotalProtein = rd["AvgPro"] != DBNull.Value ? Convert.ToDouble(rd["AvgPro"]) : 0
+                                TotalBurnCalories = rd["TotalBurnCal"] != DBNull.Value ? Convert.ToDouble(rd["TotalBurnCal"]) : 0
                             });
                         }
                     }
