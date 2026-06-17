@@ -14,6 +14,8 @@ namespace FitnessTracker
 {
     public partial class fitnesstracker : Form
     {
+        private ComboBox cmbTimeRange;
+        private OxyPlot.WindowsForms.PlotView chartTrends;
         private string currentUser;
         private DailyLog currentDailyLog; // 記錄當天所有的飲食與運動資料物件
         private UserProfile currentUserProfile; // 存放最新個人基本資料
@@ -28,6 +30,24 @@ namespace FitnessTracker
             InitializeComponent();
             currentUser = account;
             this.Text = $"運動飲食小助手 - 目前使用者: {currentUser}";
+            cmbQuickFood.Items.Clear();
+            cmbQuickFood.Items.Add("--請選擇常用食物--"); // 放一個提示當第一項
+            foreach (var foodName in quickFoodPreset.Keys)
+            {
+                cmbQuickFood.Items.Add(foodName);
+            }
+            cmbTimeRange= comboBox1;
+            chartTrends = new OxyPlot.WindowsForms.PlotView();
+            chartTrends.Location = new Point(10, 45); // 讓開上方的 ComboBox 位置
+            chartTrends.Size = new Size(panelChartContainer.Width - 20, panelChartContainer.Height - 60);
+            chartTrends.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right; // 自動伸縮
+            panelChartContainer.Controls.Add(chartTrends); // 把圖表塞進箱子
+
+            cmbTimeRange.Items.Clear();
+            cmbTimeRange.Items.AddRange(new string[] { "最近一週 (7天趨勢)", "最近一個月 (30天趨勢)", "最近一年 (按月平均)" });
+            cmbTimeRange.SelectedIndex = 0;
+            cmbQuickFood.SelectedIndex = 0;
+            
             LoadDataByDate();
         }
 
@@ -66,6 +86,24 @@ namespace FitnessTracker
             public int ActivityIndex { get; set; } = 0; // 預設選第一個靜態生活
             public double LastWeight { get; set; } = 0;
         }
+        public struct FoodInfo
+        {
+            public int Calories;
+            public double Protein;
+            public FoodInfo(int cal, double pro) { Calories = cal; Protein = pro; }
+        }
+
+        // 建立常用食物字典
+        private Dictionary<string, FoodInfo> quickFoodPreset = new Dictionary<string, FoodInfo>()
+{
+          { "白飯 (一碗)", new FoodInfo(280, 6.0) },
+          { "水煮雞胸肉 (100g)", new FoodInfo(165, 31.0) },
+          { "茶葉蛋 (一顆)", new FoodInfo(75, 7.0) },
+          { "無糖豆漿 (400ml)", new FoodInfo(130, 13.0) },
+          { "香蕉 (一根)", new FoodInfo(90, 1.1) },
+          { "香煎鮭魚 (100g)", new FoodInfo(200, 20.0) },
+          { "地瓜 (中一條)", new FoodInfo(140, 1.5) }
+};
 
         private void fitnesstracker_Load(object sender, EventArgs e)
         {
@@ -128,6 +166,7 @@ namespace FitnessTracker
 
             isLoadingData = false;
             RefreshGrids();
+            UpdateChartVisuals();
         }
       
 
@@ -210,7 +249,18 @@ namespace FitnessTracker
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
+            // 如果使用者正在讀取資料（isLoadingData 擋箭牌為 true），或者選到預設提示字，就先別動
+            if (isLoadingData || cmbQuickFood.SelectedIndex <= 0) return;
 
+            string selectedFood = cmbQuickFood.SelectedItem.ToString();
+
+            // 從字典裡精準撈出該食物的營養標示，直接填入對應的文字框中！
+            if (quickFoodPreset.ContainsKey(selectedFood))
+            {
+                txtFoodName.Text = selectedFood; // 填入食物名稱
+                txtFoodCal.Text = quickFoodPreset[selectedFood].Calories.ToString(); // 填入熱量
+                txtFoodProtein.Text = quickFoodPreset[selectedFood].Protein.ToString(); // 填入蛋白質
+            }
         }
 
         private void label6_Click(object sender, EventArgs e)
@@ -247,6 +297,7 @@ namespace FitnessTracker
             txtFoodName.Clear();
             txtFoodCal.Clear();
             txtFoodProtein.Clear();
+            cmbQuickFood.SelectedIndex = 0;
         }
 
         private void btnAddExercise_Click(object sender, EventArgs e)
@@ -268,6 +319,10 @@ namespace FitnessTracker
             txtFoodName.Clear();
             txtFoodCal.Clear();
             txtFoodProtein.Clear();
+            cmbQuickFood.SelectedIndex = 0;
+
+            // 💡【即時同步】：一新增熱量，圖表立刻同步重畫！
+            UpdateChartVisuals();
         }
 
         private void label2_Click(object sender, EventArgs e)
@@ -351,6 +406,7 @@ namespace FitnessTracker
                         DatabaseHelper.DeleteLogItem("DietLogs", dbId);
 
                         LoadDataByDate();
+                        UpdateChartVisuals();
                         MessageBox.Show("飲食紀錄已刪除！", "成功");
                     }
                 }
@@ -384,6 +440,66 @@ namespace FitnessTracker
             {
                 MessageBox.Show("請先在表格中點選一筆想要刪除的運動紀錄！", "提示");
             }
+        }
+
+        private void UpdateChartVisuals()
+        {
+            if (chartTrends == null || cmbTimeRange == null) return;
+
+            string rangeType = "week";
+            if (cmbTimeRange.SelectedIndex == 1) rangeType = "month";
+            else if (cmbTimeRange.SelectedIndex == 2) rangeType = "year";
+
+            // 1. 從資料庫撈取大數據
+            List<DatabaseHelper.ChartDataPoint> dataPoints = DatabaseHelper.GetChartData(currentUser, rangeType);
+
+            // 2. 建立一個全新的畫布
+            var plotModel = new OxyPlot.PlotModel { Title = "每日攝取熱量趨勢圖" };
+
+            // 3. 💡 【核心重組】：我們只建立一條折線：熱量 (kcal)
+            var seriesCal = new OxyPlot.Series.LineSeries
+            {
+                Title = "熱量 (kcal)",
+                Color = OxyPlot.OxyColors.Red, // 使用醒目的橘紅色
+                StrokeThickness = 3,                 // 線條粗細
+                MarkerType = OxyPlot.MarkerType.Circle, // 轉折點改用圓形點
+                MarkerSize = 5,
+                MarkerFill = OxyPlot.OxyColors.White
+            };
+
+            // 4. 💡 乾淨的單一 Y 軸設定（直接放在左邊，用來對齊熱量 0 ~ 2000+）
+            var yAxis = new OxyPlot.Axes.LinearAxis
+            {
+                Position = OxyPlot.Axes.AxisPosition.Left,
+                Title = "熱量 (kcal)",
+                Minimum = 0 // 讓熱量刻度從 0 開始看，比較直覺
+            };
+            plotModel.Axes.Add(yAxis);
+
+            // 5. 設定 X 軸 (時間軸)
+            var categoryAxis = new OxyPlot.Axes.CategoryAxis
+            {
+                Position = OxyPlot.Axes.AxisPosition.Bottom,
+                Title = "日期"
+            };
+            plotModel.Axes.Add(categoryAxis);
+
+            // 6. 依序把數據庫捞出來的點，只塞入「熱量」數值
+            for (int i = 0; i < dataPoints.Count; i++)
+            {
+                categoryAxis.Labels.Add(dataPoints[i].Label); // 塞入日期字串 (例如 2026-06-17)
+                seriesCal.Points.Add(new OxyPlot.DataPoint(i, dataPoints[i].TotalCalories)); // 塞入該日總熱量
+            }
+
+            // 7. 把這條熱量線裝上畫布，並交付給控制項渲染
+            plotModel.Series.Add(seriesCal);
+
+            chartTrends.Model = plotModel; // 注入更新！
+        }
+
+        private void comboBox1_SelectedIndexChanged_1(object sender, EventArgs e)
+        {
+            UpdateChartVisuals();
         }
     }
 }

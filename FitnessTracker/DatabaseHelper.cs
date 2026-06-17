@@ -86,12 +86,7 @@ namespace FitnessTracker
         public static void LoadUserProfile(string account, ref string gender, ref double height, ref int age, ref int activityIndex, ref double lastWeight)
         {
             // 💡 防呆：如果傳進來的帳號根本是空的，立刻警告，因為這就是換日崩潰的主因！
-            if (string.IsNullOrEmpty(account))
-            {
-                MessageBox.Show("【警告】資料庫讀取失敗：傳入的 currentUser 帳號是空的(null或空字串)！\n這會導致程式查不到資料而直接退回預設值(男/170)！",
-                                "讀取帳號落空警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+            if (string.IsNullOrEmpty(account)) return;
 
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
@@ -114,12 +109,6 @@ namespace FitnessTracker
 
                             // 💡 如果成功讀到資料，跳出提示（測試成功後可以整段刪掉，現在用來抓姦）
                             System.Diagnostics.Debug.WriteLine($"[DatabaseHelper] 成功讀取！{account} -> 性別={gender}, 身高={height}");
-                        }
-                        else
-                        {
-                            // 💡 如果資料庫連線正常，但裡面找不到這個學號的資料
-                            MessageBox.Show($"【資料庫讀取報告】\n連線成功，但在 UserProfiles 資料表內【找不到】帳號為 '{account.Trim()}' 的生理資料紀錄！\n因此系統將暫時使用畫面的預設值。",
-                                            "讀取結果：無資料", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         }
                     }
                 }
@@ -173,21 +162,12 @@ namespace FitnessTracker
                     cmd.Parameters.AddWithValue("@LastWeight", lastWeight);
 
                     int rowsAffected = cmd.ExecuteNonQuery();
-
-                    // 💡【物理診斷爆彈】：強迫跳出視窗，告訴我們底層資料庫的真實慘狀！
-                    MessageBox.Show($"【資料庫連線診斷報告】\n" +
-                                    $"目前登入帳號: '{cleanAccount}'\n" +
-                                    $"資料庫內原先是否存在: {(hasProfile > 0 ? "是" : "否")}\n" +
-                                    $"本次執行的 SQL 動作: {opType}\n" +
-                                    $"本次真正成功影響的資料庫列數: {rowsAffected} 筆\n" +
-                                    $"預期寫入資料: 性別={cleanGender}, 身高={height}, 體重={lastWeight}",
-                                    "後台即時診斷", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
         }
-    
-    // 1. 讀取指定日期與帳號的飲食清單
-public static List<fitnesstracker.DietItem> GetDietLogs(string account, string dateStr)
+
+        // 1. 讀取指定日期與帳號的飲食清單
+        public static List<fitnesstracker.DietItem> GetDietLogs(string account, string dateStr)
         {
             List<fitnesstracker.DietItem> list = new List<fitnesstracker.DietItem>();
             using (SqlConnection conn = new SqlConnection(connectionString))
@@ -359,6 +339,86 @@ public static List<fitnesstracker.DietItem> GetDietLogs(string account, string d
                     cmd.ExecuteNonQuery();
                 }
             }
+        }
+        // 💡 1. 宣告圖表數據專用的資料結構（消滅 CS0426 錯誤）
+        public class ChartDataPoint
+        {
+            public string Label { get; set; }        // X 軸標籤 (日期或月份)
+            public double AvgWeight { get; set; }    // 體重
+            public double TotalCalories { get; set; } // 總熱量
+            public double TotalProtein { get; set; }  // 總蛋白質
+        }
+
+        // 💡 2. 實作圖表數據的 INNER/LEFT JOIN 撈取方法（消滅 CS0117 錯誤）
+        public static List<ChartDataPoint> GetChartData(string account, string rangeType)
+        {
+            List<ChartDataPoint> list = new List<ChartDataPoint>();
+
+            int daysBack = 7;
+            if (rangeType == "month") daysBack = 30;
+            else if (rangeType == "year") daysBack = 365;
+
+            string startDateStr = DateTime.Today.AddDays(-daysBack).ToString("yyyy-MM-dd");
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string sql = "";
+
+                if (rangeType == "year")
+                {
+                    // 年變化的部分維持原樣
+                    sql = @"
+                SELECT 
+                    SUBSTRING(LogDate, 1, 7) AS GroupLabel,
+                    0 AS AvgW,
+                    SUM(Calories) / COUNT(DISTINCT LogDate) AS AvgCal,
+                    SUM(Protein) / COUNT(DISTINCT LogDate) AS AvgPro
+                FROM DietLogs
+                WHERE TRIM(Account) = @Account AND LogDate >= @StartDate
+                GROUP BY SUBSTRING(LogDate, 1, 7)
+                ORDER BY GroupLabel";
+                }
+                else
+                {
+                    sql = @"
+                    SELECT 
+                        Diet.LogDate AS GroupLabel,
+                        MAX(ISNULL(Daily.W, 0)) AS AvgW, 
+                        SUM(Diet.Calories) AS AvgCal,
+                        SUM(Diet.Protein) AS AvgPro
+                        FROM DietLogs Diet
+                        LEFT JOIN (
+                        SELECT LogDate, Weight AS W 
+                        FROM DailyLogs 
+                        WHERE TRIM(Account) = @Account
+                        ) Daily ON Diet.LogDate = Daily.LogDate
+                         WHERE TRIM(Diet.Account) = @Account AND Diet.LogDate >= @StartDate
+                        GROUP BY Diet.LogDate
+                        ORDER BY Diet.LogDate";
+                }
+
+                using (SqlCommand cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Account", account.Trim());
+                    cmd.Parameters.AddWithValue("@StartDate", startDateStr);
+
+                    using (SqlDataReader rd = cmd.ExecuteReader())
+                    {
+                        while (rd.Read())
+                        {
+                            list.Add(new ChartDataPoint
+                            {
+                                Label = rd["GroupLabel"].ToString(),
+                                AvgWeight = rd["AvgW"] != DBNull.Value ? Convert.ToDouble(rd["AvgW"]) : 0,
+                                TotalCalories = rd["AvgCal"] != DBNull.Value ? Convert.ToDouble(rd["AvgCal"]) : 0,
+                                TotalProtein = rd["AvgPro"] != DBNull.Value ? Convert.ToDouble(rd["AvgPro"]) : 0
+                            });
+                        }
+                    }
+                }
+            }
+            return list;
         }
     }
 }

@@ -30,29 +30,41 @@
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.dtpDate = new System.Windows.Forms.DateTimePicker();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.pbCalories = new System.Windows.Forms.ProgressBar();
-            this.lblCalProgress = new System.Windows.Forms.Label();
-            this.lblCalStatus = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.txtWeight = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
+            this.cmbGender = new System.Windows.Forms.ComboBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.cmbActivity = new System.Windows.Forms.ComboBox();
+            this.txtAge = new System.Windows.Forms.TextBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.txtHeight = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.btnSaveWeight = new System.Windows.Forms.Button();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.cmbQuickFood = new System.Windows.Forms.ComboBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.txtFoodName = new System.Windows.Forms.TextBox();
-            this.txtFoodCal = new System.Windows.Forms.TextBox();
-            this.txtFoodProtein = new System.Windows.Forms.TextBox();
-            this.btnAddDiet = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.txtWeight = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.lblCalStatus = new System.Windows.Forms.Label();
+            this.lblCalProgress = new System.Windows.Forms.Label();
+            this.pbCalories = new System.Windows.Forms.ProgressBar();
+            this.dtpDate = new System.Windows.Forms.DateTimePicker();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.btnDeleteDiet = new System.Windows.Forms.Button();
             this.dgvDiet = new System.Windows.Forms.DataGridView();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.btnAddDiet = new System.Windows.Forms.Button();
+            this.txtFoodProtein = new System.Windows.Forms.TextBox();
+            this.txtFoodCal = new System.Windows.Forms.TextBox();
+            this.txtFoodName = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.cmbQuickFood = new System.Windows.Forms.ComboBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.btnDeleteExercise = new System.Windows.Forms.Button();
+            this.dgvExercise = new System.Windows.Forms.DataGridView();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.btnAddExercise = new System.Windows.Forms.Button();
             this.txtExerciseBurn = new System.Windows.Forms.TextBox();
@@ -61,28 +73,20 @@
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
-            this.dgvExercise = new System.Windows.Forms.DataGridView();
-            this.label7 = new System.Windows.Forms.Label();
-            this.txtHeight = new System.Windows.Forms.TextBox();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
-            this.txtAge = new System.Windows.Forms.TextBox();
-            this.cmbActivity = new System.Windows.Forms.ComboBox();
-            this.label13 = new System.Windows.Forms.Label();
-            this.label14 = new System.Windows.Forms.Label();
-            this.cmbGender = new System.Windows.Forms.ComboBox();
-            this.btnDeleteDiet = new System.Windows.Forms.Button();
-            this.btnDeleteExercise = new System.Windows.Forms.Button();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.panelChartContainer = new System.Windows.Forms.Panel();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
-            this.tabPage3.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            this.groupBox3.SuspendLayout();
+            this.groupBox1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvDiet)).BeginInit();
-            this.groupBox4.SuspendLayout();
+            this.groupBox3.SuspendLayout();
+            this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvExercise)).BeginInit();
+            this.groupBox4.SuspendLayout();
+            this.tabPage4.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -90,6 +94,7 @@
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
+            this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -103,60 +108,12 @@
             this.tabPage1.Controls.Add(this.groupBox2);
             this.tabPage1.Controls.Add(this.groupBox1);
             this.tabPage1.Controls.Add(this.dtpDate);
-            this.tabPage1.Location = new System.Drawing.Point(4, 33);
+            this.tabPage1.Location = new System.Drawing.Point(4, 39);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(543, 350);
+            this.tabPage1.Size = new System.Drawing.Size(543, 344);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "今日狀態";
-            // 
-            // tabPage2
-            // 
-            this.tabPage2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(190)))), ((int)(((byte)(240)))), ((int)(((byte)(200)))));
-            this.tabPage2.Controls.Add(this.btnDeleteDiet);
-            this.tabPage2.Controls.Add(this.dgvDiet);
-            this.tabPage2.Controls.Add(this.groupBox3);
-            this.tabPage2.Location = new System.Drawing.Point(4, 33);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(543, 350);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Tag = "";
-            this.tabPage2.Text = "飲食紀錄";
-            // 
-            // tabPage3
-            // 
-            this.tabPage3.BackColor = System.Drawing.Color.LightCyan;
-            this.tabPage3.Controls.Add(this.btnDeleteExercise);
-            this.tabPage3.Controls.Add(this.dgvExercise);
-            this.tabPage3.Controls.Add(this.groupBox4);
-            this.tabPage3.Location = new System.Drawing.Point(4, 33);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(543, 350);
-            this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "運動紀錄";
-            // 
-            // dtpDate
-            // 
-            this.dtpDate.Location = new System.Drawing.Point(6, 6);
-            this.dtpDate.Name = "dtpDate";
-            this.dtpDate.Size = new System.Drawing.Size(188, 33);
-            this.dtpDate.TabIndex = 0;
-            this.dtpDate.ValueChanged += new System.EventHandler(this.dtpDate_ValueChanged);
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.groupBox1.Controls.Add(this.lblCalStatus);
-            this.groupBox1.Controls.Add(this.lblCalProgress);
-            this.groupBox1.Controls.Add(this.pbCalories);
-            this.groupBox1.Location = new System.Drawing.Point(6, 45);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(531, 134);
-            this.groupBox1.TabIndex = 1;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "今日熱量統計";
             // 
             // groupBox2
             // 
@@ -182,58 +139,93 @@
             this.groupBox2.Text = "個人狀態";
             this.groupBox2.Enter += new System.EventHandler(this.groupBox2_Enter);
             // 
-            // pbCalories
+            // cmbGender
             // 
-            this.pbCalories.Location = new System.Drawing.Point(128, 0);
-            this.pbCalories.Name = "pbCalories";
-            this.pbCalories.Size = new System.Drawing.Size(397, 27);
-            this.pbCalories.TabIndex = 0;
+            this.cmbGender.FormattingEnabled = true;
+            this.cmbGender.Items.AddRange(new object[] {
+            "男",
+            "女"});
+            this.cmbGender.Location = new System.Drawing.Point(348, 32);
+            this.cmbGender.Name = "cmbGender";
+            this.cmbGender.Size = new System.Drawing.Size(51, 38);
+            this.cmbGender.TabIndex = 12;
             // 
-            // lblCalProgress
+            // label14
             // 
-            this.lblCalProgress.AutoSize = true;
-            this.lblCalProgress.Location = new System.Drawing.Point(12, 38);
-            this.lblCalProgress.Name = "lblCalProgress";
-            this.lblCalProgress.Size = new System.Drawing.Size(109, 24);
-            this.lblCalProgress.TabIndex = 1;
-            this.lblCalProgress.Text = "今日已攝取:";
-            this.lblCalProgress.Click += new System.EventHandler(this.lblCalProgress_Click);
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(275, 35);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(85, 30);
+            this.label14.TabIndex = 11;
+            this.label14.Text = "性別：";
             // 
-            // lblCalStatus
+            // label13
             // 
-            this.lblCalStatus.AutoSize = true;
-            this.lblCalStatus.Location = new System.Drawing.Point(12, 71);
-            this.lblCalStatus.Name = "lblCalStatus";
-            this.lblCalStatus.Size = new System.Drawing.Size(109, 24);
-            this.lblCalStatus.TabIndex = 2;
-            this.lblCalStatus.Text = "剩餘可攝取:";
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(251, 77);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(109, 30);
+            this.label13.TabIndex = 10;
+            this.label13.Text = "活動量：";
+            this.label13.Click += new System.EventHandler(this.label13_Click);
             // 
-            // label1
+            // cmbActivity
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 35);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(67, 24);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "體重：";
+            this.cmbActivity.FormattingEnabled = true;
+            this.cmbActivity.Items.AddRange(new object[] {
+            "靜態生活 (幾乎不運動)",
+            "輕度活動 (每週運動1-3次)",
+            "中度活動 (每週運動3-5次)",
+            "高度活動 (每週運動6-7次)",
+            "非常活躍 (激烈運動/勞動工作)"});
+            this.cmbActivity.Location = new System.Drawing.Point(348, 74);
+            this.cmbActivity.Name = "cmbActivity";
+            this.cmbActivity.Size = new System.Drawing.Size(154, 38);
+            this.cmbActivity.TabIndex = 9;
+            this.cmbActivity.SelectedIndexChanged += new System.EventHandler(this.cmbActivity_SelectedIndexChanged);
             // 
-            // txtWeight
+            // txtAge
             // 
-            this.txtWeight.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.txtWeight.Location = new System.Drawing.Point(78, 32);
-            this.txtWeight.Name = "txtWeight";
-            this.txtWeight.Size = new System.Drawing.Size(110, 33);
-            this.txtWeight.TabIndex = 1;
+            this.txtAge.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.txtAge.Location = new System.Drawing.Point(78, 109);
+            this.txtAge.Name = "txtAge";
+            this.txtAge.Size = new System.Drawing.Size(110, 39);
+            this.txtAge.TabIndex = 8;
             // 
-            // label2
+            // label12
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(199, 41);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(32, 24);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "kg";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(12, 112);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(85, 30);
+            this.label12.TabIndex = 7;
+            this.label12.Text = "年齡：";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(194, 80);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(47, 30);
+            this.label11.TabIndex = 6;
+            this.label11.Text = "cm";
+            // 
+            // txtHeight
+            // 
+            this.txtHeight.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.txtHeight.Location = new System.Drawing.Point(78, 71);
+            this.txtHeight.Name = "txtHeight";
+            this.txtHeight.Size = new System.Drawing.Size(110, 39);
+            this.txtHeight.TabIndex = 5;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(12, 74);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(85, 30);
+            this.label7.TabIndex = 4;
+            this.label7.Text = "身高：";
             // 
             // btnSaveWeight
             // 
@@ -244,6 +236,115 @@
             this.btnSaveWeight.Text = "更新個人狀態";
             this.btnSaveWeight.UseVisualStyleBackColor = true;
             this.btnSaveWeight.Click += new System.EventHandler(this.btnSaveWeight_Click);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(199, 41);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(41, 30);
+            this.label2.TabIndex = 2;
+            this.label2.Text = "kg";
+            this.label2.Click += new System.EventHandler(this.label2_Click);
+            // 
+            // txtWeight
+            // 
+            this.txtWeight.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.txtWeight.Location = new System.Drawing.Point(78, 32);
+            this.txtWeight.Name = "txtWeight";
+            this.txtWeight.Size = new System.Drawing.Size(110, 39);
+            this.txtWeight.TabIndex = 1;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(12, 35);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(85, 30);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "體重：";
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.groupBox1.Controls.Add(this.lblCalStatus);
+            this.groupBox1.Controls.Add(this.lblCalProgress);
+            this.groupBox1.Controls.Add(this.pbCalories);
+            this.groupBox1.Location = new System.Drawing.Point(6, 45);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(531, 134);
+            this.groupBox1.TabIndex = 1;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "今日熱量統計";
+            // 
+            // lblCalStatus
+            // 
+            this.lblCalStatus.AutoSize = true;
+            this.lblCalStatus.Location = new System.Drawing.Point(12, 71);
+            this.lblCalStatus.Name = "lblCalStatus";
+            this.lblCalStatus.Size = new System.Drawing.Size(139, 30);
+            this.lblCalStatus.TabIndex = 2;
+            this.lblCalStatus.Text = "剩餘可攝取:";
+            // 
+            // lblCalProgress
+            // 
+            this.lblCalProgress.AutoSize = true;
+            this.lblCalProgress.Location = new System.Drawing.Point(12, 38);
+            this.lblCalProgress.Name = "lblCalProgress";
+            this.lblCalProgress.Size = new System.Drawing.Size(139, 30);
+            this.lblCalProgress.TabIndex = 1;
+            this.lblCalProgress.Text = "今日已攝取:";
+            this.lblCalProgress.Click += new System.EventHandler(this.lblCalProgress_Click);
+            // 
+            // pbCalories
+            // 
+            this.pbCalories.Location = new System.Drawing.Point(128, 0);
+            this.pbCalories.Name = "pbCalories";
+            this.pbCalories.Size = new System.Drawing.Size(397, 27);
+            this.pbCalories.TabIndex = 0;
+            // 
+            // dtpDate
+            // 
+            this.dtpDate.Location = new System.Drawing.Point(6, 6);
+            this.dtpDate.Name = "dtpDate";
+            this.dtpDate.Size = new System.Drawing.Size(188, 39);
+            this.dtpDate.TabIndex = 0;
+            this.dtpDate.ValueChanged += new System.EventHandler(this.dtpDate_ValueChanged);
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(190)))), ((int)(((byte)(240)))), ((int)(((byte)(200)))));
+            this.tabPage2.Controls.Add(this.btnDeleteDiet);
+            this.tabPage2.Controls.Add(this.dgvDiet);
+            this.tabPage2.Controls.Add(this.groupBox3);
+            this.tabPage2.Location = new System.Drawing.Point(4, 39);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(543, 344);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Tag = "";
+            this.tabPage2.Text = "飲食紀錄";
+            // 
+            // btnDeleteDiet
+            // 
+            this.btnDeleteDiet.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
+            this.btnDeleteDiet.Location = new System.Drawing.Point(468, 314);
+            this.btnDeleteDiet.Name = "btnDeleteDiet";
+            this.btnDeleteDiet.Size = new System.Drawing.Size(60, 30);
+            this.btnDeleteDiet.TabIndex = 2;
+            this.btnDeleteDiet.Text = "刪除";
+            this.btnDeleteDiet.UseVisualStyleBackColor = false;
+            this.btnDeleteDiet.Click += new System.EventHandler(this.btnDeleteDiet_Click);
+            // 
+            // dgvDiet
+            // 
+            this.dgvDiet.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvDiet.Location = new System.Drawing.Point(15, 205);
+            this.dgvDiet.Name = "dgvDiet";
+            this.dgvDiet.RowHeadersWidth = 51;
+            this.dgvDiet.RowTemplate.Height = 27;
+            this.dgvDiet.Size = new System.Drawing.Size(513, 139);
+            this.dgvDiet.TabIndex = 1;
             // 
             // groupBox3
             // 
@@ -264,76 +365,6 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "新增飲食項目";
             // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(21, 39);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(105, 24);
-            this.label3.TabIndex = 0;
-            this.label3.Text = "食物名稱：";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(237, 39);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(118, 24);
-            this.label4.TabIndex = 1;
-            this.label4.Text = "熱量 (kcal)：";
-            this.label4.Click += new System.EventHandler(this.label4_Click);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(235, 75);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(120, 24);
-            this.label5.TabIndex = 2;
-            this.label5.Text = "蛋白質 (g) ：";
-            this.label5.Click += new System.EventHandler(this.label5_Click);
-            // 
-            // cmbQuickFood
-            // 
-            this.cmbQuickFood.FormattingEnabled = true;
-            this.cmbQuickFood.Location = new System.Drawing.Point(25, 138);
-            this.cmbQuickFood.Name = "cmbQuickFood";
-            this.cmbQuickFood.Size = new System.Drawing.Size(315, 32);
-            this.cmbQuickFood.TabIndex = 3;
-            this.cmbQuickFood.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(21, 111);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(105, 24);
-            this.label6.TabIndex = 4;
-            this.label6.Text = "快速選取：";
-            this.label6.Click += new System.EventHandler(this.label6_Click);
-            // 
-            // txtFoodName
-            // 
-            this.txtFoodName.Location = new System.Drawing.Point(25, 66);
-            this.txtFoodName.Name = "txtFoodName";
-            this.txtFoodName.Size = new System.Drawing.Size(179, 33);
-            this.txtFoodName.TabIndex = 5;
-            // 
-            // txtFoodCal
-            // 
-            this.txtFoodCal.Location = new System.Drawing.Point(352, 30);
-            this.txtFoodCal.Name = "txtFoodCal";
-            this.txtFoodCal.Size = new System.Drawing.Size(119, 33);
-            this.txtFoodCal.TabIndex = 6;
-            this.txtFoodCal.TextChanged += new System.EventHandler(this.txtFoodCal_TextChanged);
-            // 
-            // txtFoodProtein
-            // 
-            this.txtFoodProtein.Location = new System.Drawing.Point(352, 66);
-            this.txtFoodProtein.Name = "txtFoodProtein";
-            this.txtFoodProtein.Size = new System.Drawing.Size(119, 33);
-            this.txtFoodProtein.TabIndex = 7;
-            // 
             // btnAddDiet
             // 
             this.btnAddDiet.BackColor = System.Drawing.Color.DarkOliveGreen;
@@ -346,14 +377,109 @@
             this.btnAddDiet.UseVisualStyleBackColor = false;
             this.btnAddDiet.Click += new System.EventHandler(this.btnAddDiet_Click);
             // 
-            // dgvDiet
+            // txtFoodProtein
             // 
-            this.dgvDiet.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvDiet.Location = new System.Drawing.Point(15, 205);
-            this.dgvDiet.Name = "dgvDiet";
-            this.dgvDiet.RowTemplate.Height = 27;
-            this.dgvDiet.Size = new System.Drawing.Size(513, 139);
-            this.dgvDiet.TabIndex = 1;
+            this.txtFoodProtein.Location = new System.Drawing.Point(352, 66);
+            this.txtFoodProtein.Name = "txtFoodProtein";
+            this.txtFoodProtein.Size = new System.Drawing.Size(119, 39);
+            this.txtFoodProtein.TabIndex = 7;
+            // 
+            // txtFoodCal
+            // 
+            this.txtFoodCal.Location = new System.Drawing.Point(352, 30);
+            this.txtFoodCal.Name = "txtFoodCal";
+            this.txtFoodCal.Size = new System.Drawing.Size(119, 39);
+            this.txtFoodCal.TabIndex = 6;
+            this.txtFoodCal.TextChanged += new System.EventHandler(this.txtFoodCal_TextChanged);
+            // 
+            // txtFoodName
+            // 
+            this.txtFoodName.Location = new System.Drawing.Point(25, 66);
+            this.txtFoodName.Name = "txtFoodName";
+            this.txtFoodName.Size = new System.Drawing.Size(179, 39);
+            this.txtFoodName.TabIndex = 5;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(21, 111);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(133, 30);
+            this.label6.TabIndex = 4;
+            this.label6.Text = "快速選取：";
+            this.label6.Click += new System.EventHandler(this.label6_Click);
+            // 
+            // cmbQuickFood
+            // 
+            this.cmbQuickFood.FormattingEnabled = true;
+            this.cmbQuickFood.Location = new System.Drawing.Point(25, 138);
+            this.cmbQuickFood.Name = "cmbQuickFood";
+            this.cmbQuickFood.Size = new System.Drawing.Size(315, 38);
+            this.cmbQuickFood.TabIndex = 3;
+            this.cmbQuickFood.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(235, 75);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(152, 30);
+            this.label5.TabIndex = 2;
+            this.label5.Text = "蛋白質 (g) ：";
+            this.label5.Click += new System.EventHandler(this.label5_Click);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(237, 39);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(151, 30);
+            this.label4.TabIndex = 1;
+            this.label4.Text = "熱量 (kcal)：";
+            this.label4.Click += new System.EventHandler(this.label4_Click);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(21, 39);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(133, 30);
+            this.label3.TabIndex = 0;
+            this.label3.Text = "食物名稱：";
+            // 
+            // tabPage3
+            // 
+            this.tabPage3.BackColor = System.Drawing.Color.LightCyan;
+            this.tabPage3.Controls.Add(this.btnDeleteExercise);
+            this.tabPage3.Controls.Add(this.dgvExercise);
+            this.tabPage3.Controls.Add(this.groupBox4);
+            this.tabPage3.Location = new System.Drawing.Point(4, 39);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(543, 344);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "運動紀錄";
+            // 
+            // btnDeleteExercise
+            // 
+            this.btnDeleteExercise.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
+            this.btnDeleteExercise.Location = new System.Drawing.Point(468, 311);
+            this.btnDeleteExercise.Name = "btnDeleteExercise";
+            this.btnDeleteExercise.Size = new System.Drawing.Size(60, 30);
+            this.btnDeleteExercise.TabIndex = 3;
+            this.btnDeleteExercise.Text = "刪除";
+            this.btnDeleteExercise.UseVisualStyleBackColor = false;
+            this.btnDeleteExercise.Click += new System.EventHandler(this.btnDeleteExercise_Click);
+            // 
+            // dgvExercise
+            // 
+            this.dgvExercise.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvExercise.Location = new System.Drawing.Point(15, 191);
+            this.dgvExercise.Name = "dgvExercise";
+            this.dgvExercise.RowHeadersWidth = 51;
+            this.dgvExercise.RowTemplate.Height = 27;
+            this.dgvExercise.Size = new System.Drawing.Size(513, 150);
+            this.dgvExercise.TabIndex = 2;
             // 
             // groupBox4
             // 
@@ -388,21 +514,21 @@
             // 
             this.txtExerciseBurn.Location = new System.Drawing.Point(182, 116);
             this.txtExerciseBurn.Name = "txtExerciseBurn";
-            this.txtExerciseBurn.Size = new System.Drawing.Size(179, 33);
+            this.txtExerciseBurn.Size = new System.Drawing.Size(179, 39);
             this.txtExerciseBurn.TabIndex = 7;
             // 
             // txtExerciseDuration
             // 
             this.txtExerciseDuration.Location = new System.Drawing.Point(182, 75);
             this.txtExerciseDuration.Name = "txtExerciseDuration";
-            this.txtExerciseDuration.Size = new System.Drawing.Size(179, 33);
+            this.txtExerciseDuration.Size = new System.Drawing.Size(179, 39);
             this.txtExerciseDuration.TabIndex = 6;
             // 
             // txtExerciseName
             // 
             this.txtExerciseName.Location = new System.Drawing.Point(182, 36);
             this.txtExerciseName.Name = "txtExerciseName";
-            this.txtExerciseName.Size = new System.Drawing.Size(179, 33);
+            this.txtExerciseName.Size = new System.Drawing.Size(179, 39);
             this.txtExerciseName.TabIndex = 5;
             this.txtExerciseName.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
             // 
@@ -411,7 +537,7 @@
             this.label8.AutoSize = true;
             this.label8.Location = new System.Drawing.Point(21, 119);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(166, 24);
+            this.label8.Size = new System.Drawing.Size(211, 30);
             this.label8.TabIndex = 2;
             this.label8.Text = "消耗熱量 (kcal)  ：";
             // 
@@ -420,7 +546,7 @@
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(21, 77);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(166, 24);
+            this.label9.Size = new System.Drawing.Size(209, 30);
             this.label9.TabIndex = 1;
             this.label9.Text = "運動時間 (mins)：";
             // 
@@ -429,135 +555,44 @@
             this.label10.AutoSize = true;
             this.label10.Location = new System.Drawing.Point(21, 39);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(165, 24);
+            this.label10.Size = new System.Drawing.Size(205, 30);
             this.label10.TabIndex = 0;
             this.label10.Text = "運動名稱            ：";
             // 
-            // dgvExercise
+            // tabPage4
             // 
-            this.dgvExercise.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvExercise.Location = new System.Drawing.Point(15, 191);
-            this.dgvExercise.Name = "dgvExercise";
-            this.dgvExercise.RowTemplate.Height = 27;
-            this.dgvExercise.Size = new System.Drawing.Size(513, 150);
-            this.dgvExercise.TabIndex = 2;
+            this.tabPage4.Controls.Add(this.comboBox1);
+            this.tabPage4.Controls.Add(this.panelChartContainer);
+            this.tabPage4.Location = new System.Drawing.Point(4, 39);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage4.Size = new System.Drawing.Size(543, 344);
+            this.tabPage4.TabIndex = 3;
+            this.tabPage4.Text = "統計圖表";
+            this.tabPage4.UseVisualStyleBackColor = true;
             // 
-            // label7
+            // comboBox1
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(12, 74);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(67, 24);
-            this.label7.TabIndex = 4;
-            this.label7.Text = "身高：";
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(19, 19);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(108, 38);
+            this.comboBox1.TabIndex = 1;
+            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged_1);
             // 
-            // txtHeight
+            // panelChartContainer
             // 
-            this.txtHeight.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.txtHeight.Location = new System.Drawing.Point(78, 71);
-            this.txtHeight.Name = "txtHeight";
-            this.txtHeight.Size = new System.Drawing.Size(110, 33);
-            this.txtHeight.TabIndex = 5;
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(194, 80);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(37, 24);
-            this.label11.TabIndex = 6;
-            this.label11.Text = "cm";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(12, 112);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(67, 24);
-            this.label12.TabIndex = 7;
-            this.label12.Text = "年齡：";
-            // 
-            // txtAge
-            // 
-            this.txtAge.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.txtAge.Location = new System.Drawing.Point(78, 109);
-            this.txtAge.Name = "txtAge";
-            this.txtAge.Size = new System.Drawing.Size(110, 33);
-            this.txtAge.TabIndex = 8;
-            // 
-            // cmbActivity
-            // 
-            this.cmbActivity.FormattingEnabled = true;
-            this.cmbActivity.Items.AddRange(new object[] {
-            "靜態生活 (幾乎不運動)",
-            "輕度活動 (每週運動1-3次)",
-            "中度活動 (每週運動3-5次)",
-            "高度活動 (每週運動6-7次)",
-            "非常活躍 (激烈運動/勞動工作)"});
-            this.cmbActivity.Location = new System.Drawing.Point(348, 74);
-            this.cmbActivity.Name = "cmbActivity";
-            this.cmbActivity.Size = new System.Drawing.Size(154, 32);
-            this.cmbActivity.TabIndex = 9;
-            this.cmbActivity.SelectedIndexChanged += new System.EventHandler(this.cmbActivity_SelectedIndexChanged);
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(256, 74);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(86, 24);
-            this.label13.TabIndex = 10;
-            this.label13.Text = "活動量：";
-            this.label13.Click += new System.EventHandler(this.label13_Click);
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(275, 35);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(67, 24);
-            this.label14.TabIndex = 11;
-            this.label14.Text = "性別：";
-            // 
-            // cmbGender
-            // 
-            this.cmbGender.FormattingEnabled = true;
-            this.cmbGender.Items.AddRange(new object[] {
-            "男",
-            "女"});
-            this.cmbGender.Location = new System.Drawing.Point(348, 32);
-            this.cmbGender.Name = "cmbGender";
-            this.cmbGender.Size = new System.Drawing.Size(51, 32);
-            this.cmbGender.TabIndex = 12;
-            // 
-            // btnDeleteDiet
-            // 
-            this.btnDeleteDiet.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
-            this.btnDeleteDiet.Location = new System.Drawing.Point(468, 314);
-            this.btnDeleteDiet.Name = "btnDeleteDiet";
-            this.btnDeleteDiet.Size = new System.Drawing.Size(60, 30);
-            this.btnDeleteDiet.TabIndex = 2;
-            this.btnDeleteDiet.Text = "刪除";
-            this.btnDeleteDiet.UseVisualStyleBackColor = false;
-            this.btnDeleteDiet.Click += new System.EventHandler(this.btnDeleteDiet_Click);
-            // 
-            // btnDeleteExercise
-            // 
-            this.btnDeleteExercise.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
-            this.btnDeleteExercise.Location = new System.Drawing.Point(468, 311);
-            this.btnDeleteExercise.Name = "btnDeleteExercise";
-            this.btnDeleteExercise.Size = new System.Drawing.Size(60, 30);
-            this.btnDeleteExercise.TabIndex = 3;
-            this.btnDeleteExercise.Text = "刪除";
-            this.btnDeleteExercise.UseVisualStyleBackColor = false;
-            this.btnDeleteExercise.Click += new System.EventHandler(this.btnDeleteExercise_Click);
+            this.panelChartContainer.Location = new System.Drawing.Point(3, 6);
+            this.panelChartContainer.Name = "panelChartContainer";
+            this.panelChartContainer.Size = new System.Drawing.Size(531, 332);
+            this.panelChartContainer.TabIndex = 0;
             // 
             // fitnesstracker
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 30F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Bisque;
-            this.ClientSize = new System.Drawing.Size(584, 411);
+            this.ClientSize = new System.Drawing.Size(588, 425);
             this.Controls.Add(this.tabControl1);
             this.Font = new System.Drawing.Font("微軟正黑體", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -567,18 +602,19 @@
             this.Load += new System.EventHandler(this.fitnesstracker_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
-            this.tabPage2.ResumeLayout(false);
-            this.tabPage3.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
+            this.tabPage2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvDiet)).EndInit();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvDiet)).EndInit();
+            this.tabPage3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvExercise)).EndInit();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvExercise)).EndInit();
+            this.tabPage4.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -630,6 +666,9 @@
         private System.Windows.Forms.ComboBox cmbGender;
         private System.Windows.Forms.Button btnDeleteDiet;
         private System.Windows.Forms.Button btnDeleteExercise;
+        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.Panel panelChartContainer;
+        private System.Windows.Forms.ComboBox comboBox1;
     }
 }
 
