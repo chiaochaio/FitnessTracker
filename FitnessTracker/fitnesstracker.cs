@@ -33,6 +33,7 @@ namespace FitnessTracker
 
         public class DietItem
         {
+            public int Id { get; set; }
             public string FoodName { get; set; }
             public int Calories { get; set; }
             public double Protein { get; set; }
@@ -40,6 +41,7 @@ namespace FitnessTracker
 
         public class ExerciseItem
         {
+            public int Id { get; set; }
             public string ActivityName { get; set; }
             public int DurationMinutes { get; set; }
             public int BurnedCalories { get; set; }
@@ -76,54 +78,44 @@ namespace FitnessTracker
         private void LoadDataByDate()
         {
             isLoadingData = true;
-
             string dateStr = dtpDate.Value.ToString("yyyy-MM-dd");
 
-            // 1. 先確認這一天以前有沒有存過 JSON 檔案
-            string userFolder = Path.Combine(Application.StartupPath, "Data", currentUser);
-            string filePath = Path.Combine(userFolder, $"{dateStr}.json");
+            // 準備好用來承接的局部變數
+            userGender = "男";
+            userHeight = 170;
+            userAge = 20;
+            userActivityIndex = 0;
+            double todayWeight = 50;
 
-            if (File.Exists(filePath))
+            // 💡【新核心邏輯】：先去 DailyLogs 查這天有沒有儲存過歷史體重指標
+            bool hasDayHistory = DatabaseHelper.GetDailyLog(currentUser, dateStr, ref todayWeight, ref userGender, ref userHeight, ref userAge, ref userActivityIndex);
+
+            if (hasDayHistory)
             {
-                // 💾【歷史情境】：這一天以前存過資料！
-                string jsonString = File.ReadAllText(filePath);
-                currentDailyLog = JsonSerializer.Deserialize<DailyLog>(jsonString);
-
-                // 💡 歷史資料最高優先！直接從這天的檔案裡把當時的數據抓出來填畫面，絕對不被最新資料庫干擾！
-                userGender = currentDailyLog.Gender ?? "男";
-                userHeight = currentDailyLog.Height > 0 ? currentDailyLog.Height : 170;
-                userAge = currentDailyLog.Age > 0 ? currentDailyLog.Age : 20;
-                userActivityIndex = currentDailyLog.ActivityIndex;
-                txtWeight.Text = currentDailyLog.CurrentWeight.ToString();
+                // 💾【歷史情境】：這一天以前按過更新！直接採用當天寫死在 DailyLogs 的數值
+                txtWeight.Text = todayWeight.ToString();
             }
             else
             {
-                // 🌟【全新一天情境】：這一天完全沒點過、沒資料！
-                // 💡 這時候才去資料庫拿最新的一般數據來給新的一天「繼承」！
-                userGender = "男";
-                userHeight = 170;
-                userAge = 20;
-                userActivityIndex = 0;
-                double lastWeight = 50;
-
-                // 從 LocalDB 撈出最新的那筆大師級檔案
-                DatabaseHelper.LoadUserProfile(currentUser, ref userGender, ref userHeight, ref userAge, ref userActivityIndex, ref lastWeight);
-
-                // 建立新一天的空白紀錄物件，並把繼承過來的精華數據灌進去
-                currentDailyLog = new DailyLog
-                {
-                    DateString = dateStr,
-                    CurrentWeight = lastWeight,
-                    Gender = userGender,
-                    Height = userHeight,
-                    Age = userAge,
-                    ActivityIndex = userActivityIndex
-                };
-
-                txtWeight.Text = lastWeight.ToString();
+                // 🌟【全新一天情境】：這天沒點過！去 UserProfiles 拿最新帳號總檔來繼承
+                DatabaseHelper.LoadUserProfile(currentUser, ref userGender, ref userHeight, ref userAge, ref userActivityIndex, ref todayWeight);
+                txtWeight.Text = todayWeight.ToString();
             }
 
-            // 2. 統一將撈出來的變數（不論是歷史還是資料庫繼承來的）倒回畫面上顯示
+            // 建立本日核心物件，飲食運動清單一樣百分之百走資料庫 Get Logs！
+            currentDailyLog = new DailyLog
+            {
+                DateString = dateStr,
+                CurrentWeight = todayWeight,
+                Gender = userGender,
+                Height = userHeight,
+                Age = userAge,
+                ActivityIndex = userActivityIndex,
+                Diets = DatabaseHelper.GetDietLogs(currentUser, dateStr),
+                Exercises = DatabaseHelper.GetExerciseLogs(currentUser, dateStr)
+            };
+
+            // 把指標倒回畫面控制項
             txtHeight.Text = userHeight.ToString();
             txtAge.Text = userAge.ToString();
 
@@ -135,20 +127,9 @@ namespace FitnessTracker
             else cmbActivity.SelectedIndex = 0;
 
             isLoadingData = false;
-
-            // 3. 重新計算今日進度條與熱量
             RefreshGrids();
         }
-
-        private void SaveDataToFile()
-        {
-            string userFolder = Path.Combine(Application.StartupPath, "Data", currentUser);
-            string filePath = Path.Combine(userFolder, $"{currentDailyLog.DateString}.json");
-
-            // 轉成漂亮的 JSON 格式寫入
-            string jsonString = JsonSerializer.Serialize(currentDailyLog, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(filePath, jsonString);
-        }
+      
 
         // 重新整理畫面的表格與統計數據
         private void RefreshGrids()
@@ -249,30 +230,20 @@ namespace FitnessTracker
 
         private void btnAddDiet_Click(object sender, EventArgs e)
         {
-            // 檢查防呆
             if (string.IsNullOrEmpty(txtFoodName.Text) || !int.TryParse(txtFoodCal.Text, out int cal))
             {
                 MessageBox.Show("請輸入正確的食物名稱與熱量！", "提示");
                 return;
             }
-
             double.TryParse(txtFoodProtein.Text, out double protein);
+            string dateStr = dtpDate.Value.ToString("yyyy-MM-dd");
 
-            // 1. 新增到當前的資料清單中
-            currentDailyLog.Diets.Add(new DietItem
-            {
-                FoodName = txtFoodName.Text.Trim(),
-                Calories = cal,
-                Protein = protein
-            });
+            // 💡 1. 寫入 DietLogs 資料表 (講義第34頁)
+            DatabaseHelper.AddLogItem("DietLogs", currentUser, dateStr, "FoodName", txtFoodName.Text.Trim(), cal, protein);
 
-            // 2. 自動存檔
-            SaveDataToFile();
+            // 2. 重新加載並刷畫面
+            LoadDataByDate();
 
-            // 3. 重新整理表格
-            RefreshGrids();
-
-            // 4. 清空輸入欄位方便下一筆輸入
             txtFoodName.Clear();
             txtFoodCal.Clear();
             txtFoodProtein.Clear();
@@ -280,32 +251,23 @@ namespace FitnessTracker
 
         private void btnAddExercise_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(txtExerciseName.Text) ||
-        !int.TryParse(txtExerciseDuration.Text, out int duration) ||
-        !int.TryParse(txtExerciseBurn.Text, out int burn))
+            if (string.IsNullOrEmpty(txtFoodName.Text) || !int.TryParse(txtFoodCal.Text, out int cal))
             {
-                MessageBox.Show("請輸入正確的運動名稱、時間與消耗熱量！", "提示");
+                MessageBox.Show("請輸入正確的食物名稱與熱量！", "提示");
                 return;
             }
+            double.TryParse(txtFoodProtein.Text, out double protein);
+            string dateStr = dtpDate.Value.ToString("yyyy-MM-dd");
 
-            // 1. 新增到當前的運動清單中
-            currentDailyLog.Exercises.Add(new ExerciseItem
-            {
-                ActivityName = txtExerciseName.Text.Trim(),
-                DurationMinutes = duration,
-                BurnedCalories = burn
-            });
+            // 💡 1. 寫入 DietLogs 資料表 (講義第34頁)
+            DatabaseHelper.AddLogItem("DietLogs", currentUser, dateStr, "FoodName", txtFoodName.Text.Trim(), cal, protein);
 
-            // 2. 自動存檔
-            SaveDataToFile();
+            // 2. 重新加載並刷畫面
+            LoadDataByDate();
 
-            // 3. 重新整理表格
-            RefreshGrids();
-
-            // 4. 清空輸入欄位
-            txtExerciseName.Clear();
-            txtExerciseDuration.Clear();
-            txtExerciseBurn.Clear();
+            txtFoodName.Clear();
+            txtFoodCal.Clear();
+            txtFoodProtein.Clear();
         }
 
         private void label2_Click(object sender, EventArgs e)
@@ -326,18 +288,20 @@ namespace FitnessTracker
 
             string gender = cmbGender.SelectedItem?.ToString() ?? "男";
             int activityIndex = cmbActivity.SelectedIndex >= 0 ? cmbActivity.SelectedIndex : 0;
+            string dateStr = dtpDate.Value.ToString("yyyy-MM-dd");
 
-            // 2. 🔒【鎖定當天歷史】：把這筆設定寫入當天的物件中
+            // 2. 💡【鎖定當天歷史 -> 改寫入 DailyLogs 資料表！】
+            // 這樣做就能把這一天的歷史數據用 SQL 永久封印，再也不需要 SaveDataToFile(); 
+            DatabaseHelper.SaveDailyLog(currentUser, dateStr, w, gender, h, age, activityIndex);
+
+            // 同步把數據填進當前記憶體物件，確保當天飲食運動運算不會斷軌
             currentDailyLog.CurrentWeight = w;
             currentDailyLog.Gender = gender;
             currentDailyLog.Height = h;
             currentDailyLog.Age = age;
             currentDailyLog.ActivityIndex = activityIndex;
 
-            // 儲存到當天的 JSON 歷史檔案中，以後點回這天，它就永遠長這樣！
-            SaveDataToFile();
-
-            // 3. 🚀【更新未來繼承】：同時把最新狀況寫入 LocalDB，給未來的全新日子使用
+            // 3. 🚀【更新未來繼承】：維持原樣寫入大師資料庫，讓未來完全空白的新日子去承接
             DatabaseHelper.UpdateUserProfile(currentUser, gender, h, age, activityIndex, w);
 
             // 4. 同步更新目前主畫面的全域計算變數
@@ -374,29 +338,19 @@ namespace FitnessTracker
 
         private void btnDeleteDiet_Click(object sender, EventArgs e)
         {
-            // 檢查使用者是否有選中 DataGridView 的任何一列
             if (dgvDiet.CurrentRow != null && dgvDiet.CurrentRow.Index >= 0)
             {
-                // 取得目前選中那一列的索引值
                 int selectedIndex = dgvDiet.CurrentRow.Index;
-
-                // 防呆：確保索引值在 List 的合理範圍內
                 if (selectedIndex < currentDailyLog.Diets.Count)
                 {
-                    // 彈出確認視窗，避免使用者不小心手殘點錯
                     DialogResult result = MessageBox.Show("確定要刪除這筆飲食紀錄嗎？", "確認刪除", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
                     if (result == DialogResult.Yes)
                     {
-                        // 1. 從核心資料清單中移除該筆項目
-                        currentDailyLog.Diets.RemoveAt(selectedIndex);
+                        // 💡 拿著這筆紀錄在資料庫裡的真正主鍵 Id 去執行 SQL 刪除！(講義第35頁)
+                        int dbId = currentDailyLog.Diets[selectedIndex].Id;
+                        DatabaseHelper.DeleteLogItem("DietLogs", dbId);
 
-                        // 2. 重新儲存到 JSON 檔案
-                        SaveDataToFile();
-
-                        // 3. 重新整理畫面表格與熱量進度條
-                        RefreshGrids();
-
+                        LoadDataByDate();
                         MessageBox.Show("飲食紀錄已刪除！", "成功");
                     }
                 }
@@ -409,26 +363,19 @@ namespace FitnessTracker
 
         private void btnDeleteExercise_Click(object sender, EventArgs e)
         {
-            // 檢查使用者是否有選中 DataGridView 的任何一列
             if (dgvExercise.CurrentRow != null && dgvExercise.CurrentRow.Index >= 0)
             {
                 int selectedIndex = dgvExercise.CurrentRow.Index;
-
                 if (selectedIndex < currentDailyLog.Exercises.Count)
                 {
                     DialogResult result = MessageBox.Show("確定要刪除這筆運動紀錄嗎？", "確認刪除", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
                     if (result == DialogResult.Yes)
                     {
-                        // 1. 從運動清單中移除
-                        currentDailyLog.Exercises.RemoveAt(selectedIndex);
+                        // 💡 同理，拿著 Id 刪除運動
+                        int dbId = currentDailyLog.Exercises[selectedIndex].Id;
+                        DatabaseHelper.DeleteLogItem("ExerciseLogs", dbId);
 
-                        // 2. 存檔
-                        SaveDataToFile();
-
-                        // 3. 刷畫面
-                        RefreshGrids();
-
+                        LoadDataByDate();
                         MessageBox.Show("運動紀錄已刪除！", "成功");
                     }
                 }

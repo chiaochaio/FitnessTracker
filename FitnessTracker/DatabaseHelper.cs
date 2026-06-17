@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient; //  換成微軟正統 SQL 工具箱 (講講義第43頁)
 using System.IO;
 using System.Windows.Forms;
@@ -181,6 +182,181 @@ namespace FitnessTracker
                                     $"本次真正成功影響的資料庫列數: {rowsAffected} 筆\n" +
                                     $"預期寫入資料: 性別={cleanGender}, 身高={height}, 體重={lastWeight}",
                                     "後台即時診斷", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+        }
+    
+    // 1. 讀取指定日期與帳號的飲食清單
+public static List<fitnesstracker.DietItem> GetDietLogs(string account, string dateStr)
+        {
+            List<fitnesstracker.DietItem> list = new List<fitnesstracker.DietItem>();
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string sql = "SELECT Id, FoodName, Calories, Protein FROM DietLogs WHERE TRIM(Account) = @Account AND LogDate = @LogDate";
+                using (SqlCommand cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Account", account.Trim());
+                    cmd.Parameters.AddWithValue("@LogDate", dateStr);
+                    using (SqlDataReader rd = cmd.ExecuteReader()) // 講義第49頁標準讀取
+                    {
+                        while (rd.Read())
+                        {
+                            list.Add(new fitnesstracker.DietItem
+                            {
+                                Id = Convert.ToInt32(rd["Id"]), // 💡 存下資料庫自動生成的 Id，方便等一下刪除用！
+                                FoodName = rd["FoodName"].ToString().Trim(),
+                                Calories = Convert.ToInt32(rd["Calories"]),
+                                Protein = Convert.ToDouble(rd["Protein"])
+                            });
+                        }
+                    }
+                }
+            }
+            return list;
+        }
+
+        // 2. 讀取指定日期與帳號的運動清單
+        public static List<fitnesstracker.ExerciseItem> GetExerciseLogs(string account, string dateStr)
+        {
+            List<fitnesstracker.ExerciseItem> list = new List<fitnesstracker.ExerciseItem>();
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string sql = "SELECT Id, ActivityName, DurationMinutes, BurnedCalories FROM ExerciseLogs WHERE TRIM(Account) = @Account AND LogDate = @LogDate";
+                using (SqlCommand cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Account", account.Trim());
+                    cmd.Parameters.AddWithValue("@LogDate", dateStr);
+                    using (SqlDataReader rd = cmd.ExecuteReader())
+                    {
+                        while (rd.Read())
+                        {
+                            list.Add(new fitnesstracker.ExerciseItem
+                            {
+                                Id = Convert.ToInt32(rd["Id"]),
+                                ActivityName = rd["ActivityName"].ToString().Trim(),
+                                DurationMinutes = Convert.ToInt32(rd["DurationMinutes"]),
+                                BurnedCalories = Convert.ToInt32(rd["BurnedCalories"])
+                            });
+                        }
+                    }
+                }
+            }
+            return list;
+        }
+
+        // 3. 新增單筆紀錄 (飲食或運動) -> 對齊講義第34頁 INSERT
+        public static void AddLogItem(string tableName, string account, string dateStr, string nameField, string nameValue, int val1, double val2)
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string sql = "";
+                if (tableName == "DietLogs")
+                {
+                    sql = "INSERT INTO DietLogs (Account, LogDate, FoodName, Calories, Protein) VALUES (@Account, @LogDate, @Name, @Val1, @Val2)";
+                }
+                else
+                {
+                    sql = "INSERT INTO ExerciseLogs (Account, LogDate, ActivityName, DurationMinutes, BurnedCalories) VALUES (@Account, @LogDate, @Name, @Val1, @Val2)";
+                }
+
+                using (SqlCommand cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Account", account.Trim());
+                    cmd.Parameters.AddWithValue("@LogDate", dateStr);
+                    cmd.Parameters.AddWithValue("@Name", nameValue);
+                    cmd.Parameters.AddWithValue("@Val1", val1);
+                    cmd.Parameters.AddWithValue("@Val2", val2);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        // 4. 刪除單筆紀錄 -> 對齊講義第35頁 DELETE
+        public static void DeleteLogItem(string tableName, int id)
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string sql = $"DELETE FROM {tableName} WHERE Id = @Id";
+                using (SqlCommand cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Id", id);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        // 1. 檢查並撈取特定日期是否有存過歷史體重指標
+        public static bool GetDailyLog(string account, string dateStr, ref double weight, ref string gender, ref double height, ref int age, ref int activityIndex)
+        {
+            bool hasHistory = false;
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string sql = "SELECT Weight, Gender, Height, Age, ActivityIndex FROM DailyLogs WHERE TRIM(Account) = @Account AND LogDate = @LogDate";
+                using (SqlCommand cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Account", account.Trim());
+                    cmd.Parameters.AddWithValue("@LogDate", dateStr);
+                    using (SqlDataReader rd = cmd.ExecuteReader())
+                    {
+                        if (rd.Read())
+                        {
+                            weight = Convert.ToDouble(rd["Weight"]);
+                            gender = rd["Gender"].ToString().Trim();
+                            height = Convert.ToDouble(rd["Height"]);
+                            age = Convert.ToInt32(rd["Age"]);
+                            activityIndex = Convert.ToInt32(rd["ActivityIndex"]);
+                            hasHistory = true;
+                        }
+                    }
+                }
+            }
+            return hasHistory;
+        }
+
+        // 2. 儲存或更新特定日期的歷史體重指標 (UPSERT 概念)
+        public static void SaveDailyLog(string account, string dateStr, double weight, string gender, double height, int age, int activityIndex)
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+
+                // 先檢查這天有沒有歷史紀錄
+                string checkSql = "SELECT COUNT(*) FROM DailyLogs WHERE TRIM(Account) = @Account AND LogDate = @LogDate";
+                int count = 0;
+                using (SqlCommand checkCmd = new SqlCommand(checkSql, conn))
+                {
+                    checkCmd.Parameters.AddWithValue("@Account", account.Trim());
+                    checkCmd.Parameters.AddWithValue("@LogDate", dateStr);
+                    count = Convert.ToInt32(checkCmd.ExecuteScalar());
+                }
+
+                string sql = "";
+                if (count > 0)
+                {
+                    sql = @"UPDATE DailyLogs 
+                    SET Weight = @Weight, Gender = @Gender, Height = @Height, Age = @Age, ActivityIndex = @ActivityIndex 
+                    WHERE TRIM(Account) = @Account AND LogDate = @LogDate";
+                }
+                else
+                {
+                    sql = @"INSERT INTO DailyLogs (Account, LogDate, Weight, Gender, Height, Age, ActivityIndex) 
+                    VALUES (@Account, @LogDate, @Weight, @Gender, @Height, @Age, @ActivityIndex)";
+                }
+
+                using (SqlCommand cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Account", account.Trim());
+                    cmd.Parameters.AddWithValue("@LogDate", dateStr);
+                    cmd.Parameters.AddWithValue("@Weight", weight);
+                    cmd.Parameters.AddWithValue("@Gender", gender.Trim());
+                    cmd.Parameters.AddWithValue("@Height", height);
+                    cmd.Parameters.AddWithValue("@Age", age);
+                    cmd.Parameters.AddWithValue("@ActivityIndex", activityIndex);
+                    cmd.ExecuteNonQuery();
                 }
             }
         }
