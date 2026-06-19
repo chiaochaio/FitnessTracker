@@ -167,12 +167,10 @@ namespace FitnessTracker
 
         private void FormLogin_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // 💡 關鍵防呆：如果是登入成功後的關閉（我們前面寫的 this.Close()），就直接放行，不用再確認！
             if (this.IsLoginSuccess)
             {
                 return;
             }
-
             // 跳出確認對話框
             DialogResult result = MessageBox.Show("確定要退出系統嗎？", "結束程式", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -181,11 +179,7 @@ namespace FitnessTracker
             {
                 e.Cancel = true; // 核心：這行可以把「關閉視窗」的動作攔截並取消掉！
             }
-            else
-            {
-                // 如果點擊「是」，因為這是登入視窗，直接關閉代表使用者想完全結束程式
-                Application.Exit();
-            }
+      
         }
     }
  }
