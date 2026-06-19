@@ -74,9 +74,9 @@
             this.label9 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.panelChartContainer2 = new System.Windows.Forms.Panel();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.panelChartContainer = new System.Windows.Forms.Panel();
-            this.panelChartContainer2 = new System.Windows.Forms.Panel();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -150,7 +150,7 @@
             this.cmbGender.Location = new System.Drawing.Point(521, 51);
             this.cmbGender.Name = "cmbGender";
             this.cmbGender.Size = new System.Drawing.Size(51, 38);
-            this.cmbGender.TabIndex = 12;
+            this.cmbGender.TabIndex = 4;
             // 
             // label14
             // 
@@ -183,7 +183,7 @@
             this.cmbActivity.Location = new System.Drawing.Point(521, 96);
             this.cmbActivity.Name = "cmbActivity";
             this.cmbActivity.Size = new System.Drawing.Size(193, 38);
-            this.cmbActivity.TabIndex = 9;
+            this.cmbActivity.TabIndex = 5;
             this.cmbActivity.SelectedIndexChanged += new System.EventHandler(this.cmbActivity_SelectedIndexChanged);
             // 
             // txtAge
@@ -192,7 +192,7 @@
             this.txtAge.Location = new System.Drawing.Point(106, 144);
             this.txtAge.Name = "txtAge";
             this.txtAge.Size = new System.Drawing.Size(110, 39);
-            this.txtAge.TabIndex = 8;
+            this.txtAge.TabIndex = 3;
             // 
             // label12
             // 
@@ -218,7 +218,7 @@
             this.txtHeight.Location = new System.Drawing.Point(106, 90);
             this.txtHeight.Name = "txtHeight";
             this.txtHeight.Size = new System.Drawing.Size(110, 39);
-            this.txtHeight.TabIndex = 5;
+            this.txtHeight.TabIndex = 2;
             // 
             // label7
             // 
@@ -235,7 +235,7 @@
             this.btnSaveWeight.Location = new System.Drawing.Point(521, 175);
             this.btnSaveWeight.Name = "btnSaveWeight";
             this.btnSaveWeight.Size = new System.Drawing.Size(193, 45);
-            this.btnSaveWeight.TabIndex = 3;
+            this.btnSaveWeight.TabIndex = 6;
             this.btnSaveWeight.Text = "更新個人狀態";
             this.btnSaveWeight.UseVisualStyleBackColor = false;
             this.btnSaveWeight.Click += new System.EventHandler(this.btnSaveWeight_Click);
@@ -335,7 +335,7 @@
             this.btnDeleteDiet.Location = new System.Drawing.Point(699, 436);
             this.btnDeleteDiet.Name = "btnDeleteDiet";
             this.btnDeleteDiet.Size = new System.Drawing.Size(75, 38);
-            this.btnDeleteDiet.TabIndex = 2;
+            this.btnDeleteDiet.TabIndex = 5;
             this.btnDeleteDiet.Text = "刪除";
             this.btnDeleteDiet.UseVisualStyleBackColor = false;
             this.btnDeleteDiet.Click += new System.EventHandler(this.btnDeleteDiet_Click);
@@ -376,7 +376,7 @@
             this.btnAddDiet.Location = new System.Drawing.Point(619, 175);
             this.btnAddDiet.Name = "btnAddDiet";
             this.btnAddDiet.Size = new System.Drawing.Size(128, 48);
-            this.btnAddDiet.TabIndex = 8;
+            this.btnAddDiet.TabIndex = 4;
             this.btnAddDiet.Text = "新增這餐";
             this.btnAddDiet.UseVisualStyleBackColor = false;
             this.btnAddDiet.Click += new System.EventHandler(this.btnAddDiet_Click);
@@ -386,14 +386,14 @@
             this.txtFoodProtein.Location = new System.Drawing.Point(175, 166);
             this.txtFoodProtein.Name = "txtFoodProtein";
             this.txtFoodProtein.Size = new System.Drawing.Size(119, 39);
-            this.txtFoodProtein.TabIndex = 7;
+            this.txtFoodProtein.TabIndex = 2;
             // 
             // txtFoodCal
             // 
             this.txtFoodCal.Location = new System.Drawing.Point(175, 106);
             this.txtFoodCal.Name = "txtFoodCal";
             this.txtFoodCal.Size = new System.Drawing.Size(119, 39);
-            this.txtFoodCal.TabIndex = 6;
+            this.txtFoodCal.TabIndex = 1;
             this.txtFoodCal.TextChanged += new System.EventHandler(this.txtFoodCal_TextChanged);
             // 
             // txtFoodName
@@ -401,7 +401,7 @@
             this.txtFoodName.Location = new System.Drawing.Point(175, 45);
             this.txtFoodName.Name = "txtFoodName";
             this.txtFoodName.Size = new System.Drawing.Size(179, 39);
-            this.txtFoodName.TabIndex = 5;
+            this.txtFoodName.TabIndex = 0;
             // 
             // label6
             // 
@@ -470,7 +470,7 @@
             this.btnDeleteExercise.Location = new System.Drawing.Point(693, 436);
             this.btnDeleteExercise.Name = "btnDeleteExercise";
             this.btnDeleteExercise.Size = new System.Drawing.Size(81, 40);
-            this.btnDeleteExercise.TabIndex = 3;
+            this.btnDeleteExercise.TabIndex = 4;
             this.btnDeleteExercise.Text = "刪除";
             this.btnDeleteExercise.UseVisualStyleBackColor = false;
             this.btnDeleteExercise.Click += new System.EventHandler(this.btnDeleteExercise_Click);
@@ -509,7 +509,7 @@
             this.btnAddExercise.Location = new System.Drawing.Point(610, 187);
             this.btnAddExercise.Name = "btnAddExercise";
             this.btnAddExercise.Size = new System.Drawing.Size(131, 49);
-            this.btnAddExercise.TabIndex = 8;
+            this.btnAddExercise.TabIndex = 3;
             this.btnAddExercise.Text = "新增運動";
             this.btnAddExercise.UseVisualStyleBackColor = false;
             this.btnAddExercise.Click += new System.EventHandler(this.btnAddExercise_Click);
@@ -519,21 +519,21 @@
             this.txtExerciseBurn.Location = new System.Drawing.Point(238, 184);
             this.txtExerciseBurn.Name = "txtExerciseBurn";
             this.txtExerciseBurn.Size = new System.Drawing.Size(280, 39);
-            this.txtExerciseBurn.TabIndex = 7;
+            this.txtExerciseBurn.TabIndex = 2;
             // 
             // txtExerciseDuration
             // 
             this.txtExerciseDuration.Location = new System.Drawing.Point(238, 132);
             this.txtExerciseDuration.Name = "txtExerciseDuration";
             this.txtExerciseDuration.Size = new System.Drawing.Size(280, 39);
-            this.txtExerciseDuration.TabIndex = 6;
+            this.txtExerciseDuration.TabIndex = 1;
             // 
             // txtExerciseName
             // 
             this.txtExerciseName.Location = new System.Drawing.Point(238, 75);
             this.txtExerciseName.Name = "txtExerciseName";
             this.txtExerciseName.Size = new System.Drawing.Size(280, 39);
-            this.txtExerciseName.TabIndex = 5;
+            this.txtExerciseName.TabIndex = 0;
             this.txtExerciseName.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
             // 
             // label8
@@ -577,6 +577,13 @@
             this.tabPage4.Text = "統計圖表(C)";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
+            // panelChartContainer2
+            // 
+            this.panelChartContainer2.Location = new System.Drawing.Point(388, 6);
+            this.panelChartContainer2.Name = "panelChartContainer2";
+            this.panelChartContainer2.Size = new System.Drawing.Size(389, 470);
+            this.panelChartContainer2.TabIndex = 1;
+            // 
             // comboBox1
             // 
             this.comboBox1.FormattingEnabled = true;
@@ -593,13 +600,6 @@
             this.panelChartContainer.Size = new System.Drawing.Size(376, 470);
             this.panelChartContainer.TabIndex = 0;
             // 
-            // panelChartContainer2
-            // 
-            this.panelChartContainer2.Location = new System.Drawing.Point(388, 6);
-            this.panelChartContainer2.Name = "panelChartContainer2";
-            this.panelChartContainer2.Size = new System.Drawing.Size(389, 470);
-            this.panelChartContainer2.TabIndex = 1;
-            // 
             // fitnesstracker
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 30F);
@@ -613,6 +613,7 @@
             this.Name = "fitnesstracker";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "運動飲食小助手";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.fitnesstracker_FormClosing);
             this.Load += new System.EventHandler(this.fitnesstracker_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);

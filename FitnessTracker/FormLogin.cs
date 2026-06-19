@@ -136,6 +136,57 @@ namespace FitnessTracker
         {
 
         }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            txtAccount.Focus(); // 讓使用者連滑鼠都不用碰，開機直接打字！
+        }
+
+        private void txtAccount_KeyDown(object sender, KeyEventArgs e)
+        {
+            // 當使用者在帳號欄位按下 Enter 鍵
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.Handled = true;         // 攔截事件，防止系統發出「逼」的警告音
+                e.SuppressKeyPress = true; // 隱藏按鍵字元
+                txtPassword.Focus();       // 自動將焦點跳到密碼輸入框！
+            }
+        }
+
+        private void txtPassword_KeyDown(object sender, KeyEventArgs e)
+        {
+            // 當使用者在密碼欄位按下 Enter 鍵
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.Handled = true;         // 攔截事件
+                e.SuppressKeyPress = true;
+                btnLogin_Click(this, EventArgs.Empty); // 🚀 直接觸發登入按鈕的點擊事件！
+            }
+        }
+
+        private void FormLogin_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // 💡 關鍵防呆：如果是登入成功後的關閉（我們前面寫的 this.Close()），就直接放行，不用再確認！
+            if (this.IsLoginSuccess)
+            {
+                return;
+            }
+
+            // 跳出確認對話框
+            DialogResult result = MessageBox.Show("確定要退出系統嗎？", "結束程式", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            // 如果使用者點擊了「否 (No)」
+            if (result == DialogResult.No)
+            {
+                e.Cancel = true; // 核心：這行可以把「關閉視窗」的動作攔截並取消掉！
+            }
+            else
+            {
+                // 如果點擊「是」，因為這是登入視窗，直接關閉代表使用者想完全結束程式
+                Application.Exit();
+            }
+        }
     }
  }
 

@@ -63,8 +63,9 @@
             this.txtAccount.Location = new System.Drawing.Point(227, 152);
             this.txtAccount.Name = "txtAccount";
             this.txtAccount.Size = new System.Drawing.Size(170, 39);
-            this.txtAccount.TabIndex = 2;
+            this.txtAccount.TabIndex = 0;
             this.txtAccount.TextChanged += new System.EventHandler(this.txtAccount_TextChanged);
+            this.txtAccount.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtAccount_KeyDown);
             // 
             // txtPassword
             // 
@@ -72,15 +73,16 @@
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.PasswordChar = '*';
             this.txtPassword.Size = new System.Drawing.Size(170, 39);
-            this.txtPassword.TabIndex = 3;
+            this.txtPassword.TabIndex = 1;
             this.txtPassword.TextChanged += new System.EventHandler(this.txtPassword_TextChanged);
+            this.txtPassword.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtPassword_KeyDown);
             // 
             // btnLogin
             // 
             this.btnLogin.Location = new System.Drawing.Point(245, 300);
             this.btnLogin.Name = "btnLogin";
             this.btnLogin.Size = new System.Drawing.Size(123, 39);
-            this.btnLogin.TabIndex = 4;
+            this.btnLogin.TabIndex = 2;
             this.btnLogin.Text = "登入";
             this.btnLogin.UseVisualStyleBackColor = true;
             this.btnLogin.Click += new System.EventHandler(this.btnLogin_Click);
@@ -90,7 +92,7 @@
             this.btnRegister.Location = new System.Drawing.Point(245, 345);
             this.btnRegister.Name = "btnRegister";
             this.btnRegister.Size = new System.Drawing.Size(123, 37);
-            this.btnRegister.TabIndex = 5;
+            this.btnRegister.TabIndex = 3;
             this.btnRegister.Text = "建立帳戶";
             this.btnRegister.UseVisualStyleBackColor = true;
             this.btnRegister.Click += new System.EventHandler(this.btnRegister_Click);
@@ -103,7 +105,7 @@
             this.label3.ForeColor = System.Drawing.Color.IndianRed;
             this.label3.Location = new System.Drawing.Point(223, 194);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(163, 28);
+            this.label3.Size = new System.Drawing.Size(130, 22);
             this.label3.TabIndex = 6;
             this.label3.Text = "*請輸入7位數字";
             this.label3.Click += new System.EventHandler(this.label3_Click);
@@ -116,7 +118,7 @@
             this.label4.ForeColor = System.Drawing.Color.IndianRed;
             this.label4.Location = new System.Drawing.Point(223, 261);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(108, 28);
+            this.label4.Size = new System.Drawing.Size(86, 22);
             this.label4.TabIndex = 7;
             this.label4.Text = "*僅限數字";
             // 
@@ -140,6 +142,7 @@
             this.Name = "FormLogin";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "健康小助手-系統登入";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormLogin_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 

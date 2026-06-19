@@ -604,5 +604,22 @@ namespace FitnessTracker
         {
 
         }
+
+        private void fitnesstracker_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // 跳出確認對話框
+            DialogResult result = MessageBox.Show("確定要關閉運動飲食小助手嗎？", "關閉程式", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            // 如果使用者點擊了「否 (No)」
+            if (result == DialogResult.No)
+            {
+                e.Cancel = true; // 攔截並取消關閉視窗的動作，讓使用者留在主畫面
+            }
+            else
+            {
+                // 如果點擊「是」，確保整支程式（包含背景所有資源）完全關閉乾淨
+                Application.Exit();
+            }
+        }
     }
 }
